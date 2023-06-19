@@ -35,6 +35,8 @@
     "typescript": "5.0.4"
   },
   "devDependencies": {
-    "supabase": "^1.68.6"
+    "supabase": "^1.68.6",
+    "ts-node": "^10.9.1",
+    "tsx": "^3.12.7"
   }
 }
