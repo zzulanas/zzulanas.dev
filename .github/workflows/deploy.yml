@@ -12,6 +12,7 @@ jobs:
 
     env:
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN  }}
+      SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
       PROJECT_ID: qgxvhncvypeqowyohhys
 
     steps:
@@ -25,7 +26,7 @@ jobs:
 
       - uses: fjogeleit/http-request-action@v1.14.0
         with:
-          url: https://api.supabase.co/rest/v1/projects/$PROJECT_ID/functions/create-embeddings
+          url: https://$PROJECT_ID.supabase.co/functions/v1/create-embeddings
           method: POST
-          headers: '{"apikey": "$SUPABASE_ACCESS_TOKEN"}'
-          body: '{"name": "World"}'
+          headers: '{"Authorization": "Bearer $SUPABASE_ANON_KEY"}'
+          body: '{"name": "Functions"}'
