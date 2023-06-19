@@ -1,0 +1,26 @@
+name: Generate Embeddings
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  generate_embeddings:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - run: npm install
+
+      - run: npm install -g typescript
+
+      - run: tsc -p . # Transpile TypeScript files
+
+      - run: node lib/generate-embeddings.js # Generate embeddings
