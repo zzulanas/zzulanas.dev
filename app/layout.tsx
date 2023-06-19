@@ -28,7 +28,7 @@ export default function RootLayout({
         <Suspense fallback={"..."}>
           <Nav />
         </Suspense>
-        <main className="flex min-h-screen w-full flex-col items-center justify-center py-32">
+        <main className="flex min-h-screen w-full flex-col justify-center py-32">
           {children}
         </main>
       </body>
