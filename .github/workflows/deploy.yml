@@ -23,10 +23,3 @@ jobs:
           version: latest
 
       - run: supabase functions deploy --project-ref $PROJECT_ID
-
-      - uses: fjogeleit/http-request-action@v1.14.0
-        with:
-          url: https://$PROJECT_ID.supabase.co/functions/v1/create-embeddings
-          method: POST
-          headers: '{"Authorization": "Bearer $SUPABASE_ANON_KEY"}'
-          body: '{"name": "Functions"}'
