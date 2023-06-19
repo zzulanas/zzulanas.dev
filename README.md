@@ -1,4 +1,6 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# zzulanas.dev
+
+this is the top secret hushy hushy source code for my website. go ahead and poke around! if you make a PR I might actually add it in if it's funny
 
 ## Getting Started
 

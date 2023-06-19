@@ -4,22 +4,37 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "pnpm run embeddings && next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "embeddings": "tsx lib/generate-embeddings.ts"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.24.0",
     "@types/node": "20.2.5",
     "@types/react": "18.2.7",
     "@types/react-dom": "18.2.4",
     "autoprefixer": "10.4.14",
+    "class-variance-authority": "^0.6.0",
+    "classnames": "^2.3.2",
+    "clsx": "^1.2.1",
+    "daisyui": "^2.52.0",
     "eslint": "8.41.0",
     "eslint-config-next": "13.4.4",
+    "framer-motion": "^10.12.16",
+    "lucide-react": "^0.230.0",
     "next": "13.4.4",
+    "openai": "^3.3.0",
     "postcss": "8.4.24",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-intersection-observer": "^9.4.4",
+    "tailwind-merge": "^1.12.0",
     "tailwindcss": "3.3.2",
+    "tailwindcss-animate": "^1.0.5",
     "typescript": "5.0.4"
+  },
+  "devDependencies": {
+    "supabase": "^1.68.6"
   }
 }
