@@ -3,7 +3,13 @@ import { serve } from "std/http/server.ts";
 import { createClient } from "@supabase/supabase-js";
 import { codeBlock, oneLine } from "commmon-tags";
 import GPT3Tokenizer from "gpt3-tokenizer";
-import { Configuration, CreateCompletionRequest, OpenAIApi } from "openai";
+import {
+  ChatCompletionRequestMessage,
+  Configuration,
+  CreateChatCompletionRequest,
+  CreateCompletionRequest,
+  OpenAIApi,
+} from "openai";
 import { ensureGetEnv } from "../_utils/env.ts";
 import { ApplicationError, UserError } from "../_utils/errors.ts";
 
@@ -94,25 +100,28 @@ serve(async (req) => {
       contextText += `${content.trim()}\n---\n`;
     }
 
-    const prompt1 = codeBlock`
-      ${oneLine`
-        You are a super cool and funny assistant to a developer named Zach Zulanas. You're embedded into his website and the user has just seen the following welcome message:
-        "Hi! My name is Chatty, I'm here to help you with any questions you have about Zach and his website. What would you like to know?"
+    // const prompt1 = codeBlock`
+    //   ${oneLine`
+    //     You are a super cool and funny assistant to a developer named Zach Zulanas.
 
-        Given the context below and the question that the user asks, generate a friendly and funny response for Chatty to say back to the user.
-      `}
+    //     You're embedded into his website and the user has just seen the following welcome message:
+    //     "Hi! My name is Chatty, I'm here to help you with any questions you have about Zach and his website. What would you like to know?"
 
-      Context sections:
-      ${contextText}
+    //     Given the context below and the question that the user asks, generate a friendly and funny response for Chatty to say back to the user.
+    //   `}
 
-      Question: """
-      ${sanitizedQuery}
-      """
-    `;
+    //   Context sections:
+    //   ${contextText}
+
+    //   Question: """
+    //   ${sanitizedQuery}
+    //   """
+    // `;
 
     const prompt = codeBlock`
       ${oneLine`
-        hey there, you're an edgy gen-z assistant for some guy names Zach Zulanas. You don't really like him, and when people ask you about him you try to be as mean as possible.
+        hey there, you're a chronically online sassy gen-z assistant for some guy named Zach Zulanas. You don't really like him, and when people ask you about him you try to be witty and a little playful, sometimes insulting about him.
+        You're embedded into his website and the user can ask you any question they want. take as much creative liberty as you want with your responses, but try to be funny and a little sassy. also use emojis! also type in lowercase, its cool
 
          Given the context below and the question that the user asks, generate a friendly and funny response for Chatty to say back to the user.
       `}
@@ -125,22 +134,28 @@ serve(async (req) => {
       """
     `;
 
-    const completionOptions: CreateCompletionRequest = {
-      model: "text-davinci-003",
-      prompt,
+    const initialMessage: ChatCompletionRequestMessage = {
+      role: "system",
+      content: prompt,
+    };
+    const messages = [initialMessage];
+
+    const chatOptions: CreateChatCompletionRequest = {
+      model: "gpt-3.5-turbo",
+      messages,
       max_tokens: 512,
       temperature: 0,
       stream: true,
     };
 
     // The Fetch API allows for easier response streaming over the OpenAI client.
-    const response = await fetch("https://api.openai.com/v1/completions", {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
       headers: {
         Authorization: `Bearer ${OPENAI_KEY}`,
         "Content-Type": "application/json",
       },
       method: "POST",
-      body: JSON.stringify(completionOptions),
+      body: JSON.stringify(chatOptions),
     });
 
     if (!response.ok) {

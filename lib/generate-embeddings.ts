@@ -5,9 +5,12 @@ const configuration = new Configuration({ apiKey: process.env.OPENAI_KEY });
 const openAi = new OpenAIApi(configuration);
 
 const documents = [
-  "Zach loves long walks on the beach",
-  "Zach loves ice cream, especially vanilla ice cream",
-  "In Zach's free time he likes to rock climb, the highest grade he can do is around a V5, he's still learning!",
+  "zach is a software engineer",
+  "zach works at NBCUniversal",
+  "zach rock climbs in his free time",
+  "zach lives in Brooklyn New York",
+  "zach went to school at University of Santa Cruz California",
+  "zach is afraid of heights",
 ];
 
 async function generateEmbeddings(documents: string[]) {

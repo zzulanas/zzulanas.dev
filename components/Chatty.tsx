@@ -1,4 +1,4 @@
-import { CreateCompletionResponse } from "openai";
+import { CreateChatCompletionResponse, CreateCompletionResponse } from "openai";
 import React from "react";
 // @ts-ignore
 import { SSE } from "sse.js";
@@ -130,10 +130,13 @@ export default function Chatty() {
             return;
           }
 
-          const completionResponse: CreateCompletionResponse = JSON.parse(
-            e.data
-          );
-          const text = completionResponse.choices[0].text;
+          const completionResponse: any = JSON.parse(e.data);
+
+          console.log(completionResponse);
+          let text = completionResponse.choices[0].delta.content;
+          if (text === undefined) {
+            text = "";
+          }
 
           setAnswer((answer) => {
             const currentAnswer = answer ?? "";
@@ -221,30 +224,11 @@ export default function Chatty() {
                 search ? "opacity-100" : "opacity-0"
               }`}
             />
-          </div>
-          <div className="text-xs text-gray-500 dark:text-gray-100">
-            Or try:{" "}
-            <button
-              type="button"
-              className="px-1.5 py-0.5
-                  bg-slate-50 dark:bg-gray-500
-                  hover:bg-slate-100 dark:hover:bg-gray-600
-                  rounded border border-slate-200 dark:border-slate-600
-                  transition-colors"
-              onClick={(_) =>
-                setSearch(
-                  "Create a table called profiles with fields id, name, email"
-                )
-              }
-            >
-              Create a table called profiles with fields id, name, email
+            <button type="submit" className="px-10 outline">
+              Ask
             </button>
           </div>
         </div>
-
-        <button type="submit" className="bg-red-500">
-          Ask
-        </button>
       </form>
     </div>
   );
