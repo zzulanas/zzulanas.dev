@@ -16,10 +16,11 @@ export default function Chatty() {
       ))}
 
       <form onSubmit={handleSubmit}>
-        <label>
-          ask me something about zach...
-          <input value={input} onChange={handleInputChange} />
-        </label>
+        <input
+          value={input}
+          placeholder="ask me something about zach..."
+          onChange={handleInputChange}
+        />
       </form>
     </div>
   );
