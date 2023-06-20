@@ -28,7 +28,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "lib/generate-embeddings.ts"
+    "lib/generate-embeddings.js"
   ],
   "exclude": ["node_modules", "supabase"]
 }
