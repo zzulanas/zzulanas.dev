@@ -1,46 +1,82 @@
-import "xhr";
-import { serve } from "std/http/server.ts";
+import type { NextRequest } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { codeBlock, oneLine } from "commmon-tags";
+import { codeBlock, oneLine } from "common-tags";
 import GPT3Tokenizer from "gpt3-tokenizer";
 import {
-  ChatCompletionRequestMessage,
   Configuration,
-  CreateChatCompletionRequest,
-  CreateCompletionRequest,
   OpenAIApi,
+  CreateModerationResponse,
+  CreateEmbeddingResponse,
+} from "openai-edge";
+import { OpenAIStream, StreamingTextResponse } from "ai";
+import { ApplicationError, UserError } from "@/lib/errors/errors";
+import {
+  ChatCompletionRequestMessage,
+  CreateChatCompletionRequest,
 } from "openai";
-import { ensureGetEnv } from "../_utils/env.ts";
-import { ApplicationError, UserError } from "../../../lib/errors/errors.js";
 
-const OPENAI_KEY = ensureGetEnv("OPENAI_KEY");
-const SUPABASE_URL = ensureGetEnv("SUPABASE_URL");
-const SUPABASE_SERVICE_ROLE_KEY = ensureGetEnv("SUPABASE_SERVICE_ROLE_KEY");
+const openAiKey = process.env.OPENAI_KEY;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-const supabaseClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-const openAiConfiguration = new Configuration({ apiKey: OPENAI_KEY });
-const openai = new OpenAIApi(openAiConfiguration);
+const config = new Configuration({
+  apiKey: openAiKey,
+});
+const openai = new OpenAIApi(config);
 
-export const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+export const runtime = "edge";
 
-serve(async (req) => {
+export default async function handler(req: NextRequest) {
   try {
-    // Handle CORS
-    if (req.method === "OPTIONS") {
-      return new Response("ok", { headers: corsHeaders });
+    if (!openAiKey) {
+      throw new ApplicationError("Missing environment variable OPENAI_KEY");
     }
 
-    const query = new URL(req.url).searchParams.get("query");
+    if (!supabaseUrl) {
+      throw new ApplicationError("Missing environment variable SUPABASE_URL");
+    }
+
+    if (!supabaseServiceKey) {
+      throw new ApplicationError(
+        "Missing environment variable SUPABASE_SERVICE_ROLE_KEY"
+      );
+    }
+
+    const requestData = await req.json();
+
+    if (!requestData) {
+      throw new UserError("Missing request data");
+    }
+
+    const { prompt: query } = requestData;
+
+    if (!query) {
+      throw new UserError("Missing query in request data");
+    }
+
+    const supabaseClient = createClient(supabaseUrl, supabaseServiceKey);
 
     if (!query) {
       throw new UserError("Missing query in request data");
     }
 
     const sanitizedQuery = query.trim();
+
+    // Moderate the content to comply with OpenAI T&C
+    const moderationResponse: CreateModerationResponse = await openai
+      .createModeration({
+        input: sanitizedQuery,
+      })
+      .then((res) => res.json());
+
+    const [results] = moderationResponse.results;
+
+    if (results.flagged) {
+      throw new UserError("Flagged content", {
+        flagged: true,
+        categories: results.categories,
+      });
+    }
 
     const embeddingResponse = await openai.createEmbedding({
       model: "text-embedding-ada-002",
@@ -54,21 +90,9 @@ serve(async (req) => {
       );
     }
 
-    // Moderate the content to comply with OpenAI T&C
-    const moderationResponse = await openai.createModeration({
-      input: sanitizedQuery,
-    });
-
-    const [results] = moderationResponse.data.results;
-
-    if (results.flagged) {
-      throw new UserError("Flagged content", {
-        flagged: true,
-        categories: results.categories,
-      });
-    }
-
-    const [{ embedding }] = embeddingResponse.data.data;
+    const {
+      data: [{ embedding }],
+    }: CreateEmbeddingResponse = await embeddingResponse.json();
 
     const { error: matchError, data: documents } = await supabaseClient.rpc(
       "match_documents",
@@ -99,25 +123,6 @@ serve(async (req) => {
 
       contextText += `${content.trim()}\n---\n`;
     }
-
-    // const prompt1 = codeBlock`
-    //   ${oneLine`
-    //     You are a super cool and funny assistant to a developer named Zach Zulanas.
-
-    //     You're embedded into his website and the user has just seen the following welcome message:
-    //     "Hi! My name is Chatty, I'm here to help you with any questions you have about Zach and his website. What would you like to know?"
-
-    //     Given the context below and the question that the user asks, generate a friendly and funny response for Chatty to say back to the user.
-    //   `}
-
-    //   Context sections:
-    //   ${contextText}
-
-    //   Question: """
-    //   ${sanitizedQuery}
-    //   """
-    // `;
-
     const prompt = codeBlock`
       ${oneLine`
         hey there, you're a chronically online sassy gen-z assistant for some guy named Zach Zulanas. When people ask you about him you try to be witty and a little playful, sometimes insulting about him.
@@ -153,35 +158,28 @@ serve(async (req) => {
     // The Fetch API allows for easier response streaming over the OpenAI client.
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       headers: {
-        Authorization: `Bearer ${OPENAI_KEY}`,
+        Authorization: `Bearer ${openAiKey}`,
         "Content-Type": "application/json",
       },
       method: "POST",
       body: JSON.stringify(chatOptions),
     });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new ApplicationError("Failed to generate completion", error);
-    }
+    // Transform the response into a readable stream
+    const stream = OpenAIStream(response);
 
-    // Proxy the streamed SSE response from OpenAI
-    return new Response(response.body, {
-      headers: {
-        ...corsHeaders,
-        "Content-Type": "text/event-stream",
-      },
-    });
+    // Return a StreamingTextResponse, which can be consumed by the client
+    return new StreamingTextResponse(stream);
   } catch (err: unknown) {
     if (err instanceof UserError) {
-      return Response.json(
-        {
+      return new Response(
+        JSON.stringify({
           error: err.message,
           data: err.data,
-        },
+        }),
         {
           status: 400,
-          headers: corsHeaders,
+          headers: { "Content-Type": "application/json" },
         }
       );
     } else if (err instanceof ApplicationError) {
@@ -193,14 +191,14 @@ serve(async (req) => {
     }
 
     // TODO: include more response info in debug environments
-    return Response.json(
-      {
+    return new Response(
+      JSON.stringify({
         error: "There was an error processing your request",
-      },
+      }),
       {
         status: 500,
-        headers: corsHeaders,
+        headers: { "Content-Type": "application/json" },
       }
     );
   }
-});
+}
