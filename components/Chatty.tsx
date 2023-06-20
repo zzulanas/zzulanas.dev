@@ -1,247 +1,251 @@
-import type { CreateCompletionResponse } from "openai";
-import { FC, useCallback, useState } from "react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import { CreateCompletionResponse } from "openai";
+import React from "react";
+// @ts-ignore
 import { SSE } from "sse.js";
-import clippyImageDark from "../../public/img/clippy-dark.png";
-import clippyImage from "../../public/img/clippy.png";
+import Input from "./ui/Input";
+import { CornerDownLeft, Frown, Loader, User, Wand } from "lucide-react";
 
-import { useTheme } from "common/Providers";
-import Image from "next/image";
-import {
-  Button,
-  IconAlertCircle,
-  IconLoader,
-  IconSearch,
-  Input,
-  Loading,
-  Modal,
-} from "ui";
-import components from "~/components";
+export default function Chatty() {
+  function promptDataReducer(
+    state: any[],
+    action: {
+      index?: number;
+      answer?: string | undefined;
+      status?: string;
+      query?: string | undefined;
+      type?: "remove-last-item" | string;
+    }
+  ) {
+    // set a standard state to use later
+    let current = [...state];
 
-type Props = {
-  onClose?: () => void;
-};
-
-const questions = [
-  "How do I get started with Supabase?",
-  "How do I run Supabase locally?",
-  "How do I connect to my database?",
-  "How do I run migrations? ",
-  "How do I listen to changes in a table?",
-  "How do I setup authentication?",
-];
-
-const ClippyModal: FC<Props> = ({ onClose }) => {
-  const { isDarkMode } = useTheme();
-  const [query, setQuery] = useState("");
-  const [answer, setAnswer] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [isResponding, setIsResponding] = useState(false);
-
-  const cantHelp = answer === "Sorry, I don't know how to help with that.";
-  const status = isLoading
-    ? "Clippy is searching..."
-    : isResponding
-    ? "Clippy is responding..."
-    : cantHelp
-    ? "Clippy has failed you"
-    : undefined;
-
-  const handleConfirm = useCallback(async (query: string) => {
-    setAnswer(undefined);
-    setIsLoading(true);
-
-    const eventSource = new SSE(
-      `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/clippy-search`,
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
-          "Content-Type": "application/json",
-        },
-        payload: JSON.stringify({ query }),
+    if (action.type) {
+      switch (action.type) {
+        case "remove-last-item":
+          current.pop();
+          return [...current];
+        default:
+          break;
       }
-    );
+    }
 
-    // TODO: display an error on the UI
-    eventSource.addEventListener("error", (e) => {
-      console.error(e);
-    });
+    // check that an index is present
+    if (action.index === undefined) return [...state];
 
-    eventSource.addEventListener("message", (e) => {
-      setIsLoading(false);
+    if (!current[action.index]) {
+      current[action.index] = { query: "", answer: "", status: "" };
+    }
 
-      if (e.data === "[DONE]") {
-        setIsResponding(false);
-        return;
-      }
+    current[action.index].answer = action.answer;
 
-      setIsResponding(true);
+    if (action.query) {
+      current[action.index].query = action.query;
+    }
+    if (action.status) {
+      current[action.index].status = action.status;
+    }
 
-      const completionResponse: CreateCompletionResponse = JSON.parse(e.data);
-      const [{ text }] = completionResponse.choices;
-
-      setAnswer((answer) => {
-        return (answer ?? "") + text;
-      });
-    });
-
-    eventSource.stream();
-
-    setIsLoading(true);
-  }, []);
-
-  function handleResetPrompt() {
-    setQuery("");
-    setAnswer(undefined);
-    setIsResponding(false);
+    return [...current];
   }
 
+  const [open, setOpen] = React.useState(false);
+  const [search, setSearch] = React.useState<string>("");
+  const [question, setQuestion] = React.useState<string>("");
+  const [answer, setAnswer] = React.useState<string | undefined>("");
+  const eventSourceRef = React.useRef<SSE>();
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [hasError, setHasError] = React.useState(false);
+  const [promptIndex, setPromptIndex] = React.useState(0);
+  const [promptData, dispatchPromptData] = React.useReducer(
+    promptDataReducer,
+    []
+  );
+
+  const cantHelp =
+    answer?.trim() === "Sorry, I don't know how to help with that.";
+
+  React.useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === "k" && e.metaKey) {
+        setOpen(true);
+      }
+
+      if (e.key === "Escape") {
+        console.log("esc");
+        handleModalToggle();
+      }
+    };
+
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
+  }, []);
+
+  function handleModalToggle() {
+    setOpen(!open);
+    setSearch("");
+    setQuestion("");
+    setAnswer(undefined);
+    setPromptIndex(0);
+    dispatchPromptData({ type: "remove-last-item" });
+    setHasError(false);
+    setIsLoading(false);
+  }
+
+  const handleConfirm = React.useCallback(
+    async (query: string) => {
+      setAnswer(undefined);
+      setQuestion(query);
+      setSearch("");
+      dispatchPromptData({ index: promptIndex, answer: undefined, query });
+      setHasError(false);
+      setIsLoading(true);
+
+      const eventSource = new SSE(
+        `${
+          process.env.NEXT_PUBLIC_SUPABASE_URL
+        }/functions/v1/search-func?query=${encodeURIComponent(query)}`,
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      function handleError<T>(err: T) {
+        setIsLoading(false);
+        setHasError(true);
+        console.error(err);
+      }
+
+      eventSource.addEventListener("error", handleError);
+      eventSource.addEventListener("message", (e: any) => {
+        try {
+          setIsLoading(false);
+
+          if (e.data === "[DONE]") {
+            setPromptIndex((x) => {
+              return x + 1;
+            });
+            return;
+          }
+
+          const completionResponse: CreateCompletionResponse = JSON.parse(
+            e.data
+          );
+          const text = completionResponse.choices[0].text;
+
+          setAnswer((answer) => {
+            const currentAnswer = answer ?? "";
+
+            dispatchPromptData({
+              index: promptIndex,
+              answer: currentAnswer + text,
+            });
+
+            return (answer ?? "") + text;
+          });
+        } catch (err) {
+          handleError(err);
+        }
+      });
+
+      eventSource.stream();
+
+      eventSourceRef.current = eventSource;
+
+      setIsLoading(true);
+    },
+    [promptIndex, promptData]
+  );
+
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
+    e.preventDefault();
+    console.log(search);
+
+    handleConfirm(search);
+  };
+
   return (
-    <Modal
-      size="xlarge"
-      visible={true}
-      onCancel={onClose}
-      closable={false}
-      hideFooter
-    >
-      <div
-        className={`mx-auto max-h-[75vh] flex flex-col gap-4 rounded-lg p-4 md:pt-6 md:px-6 pb-2 w-full max-w-3xl shadow-2xl overflow-hidden border text-left border-scale-500 bg-scale-100 dark:bg-scale-300 cursor-auto relative min-w-[340px]`}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="relative">
-          <Input
-            className="w-full"
-            size="xlarge"
-            autoFocus
-            placeholder="Ask me anything about Supabase"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={(e) => {
-              switch (e.key) {
-                case "Enter":
-                  handleConfirm(query);
-                  return;
-                default:
-                  return;
-              }
-            }}
-          />
-          <div className="absolute right-0 top-0 mt-3 mr-4 hidden md:block">
-            <Button type="default" size="tiny" onClick={onClose}>
-              esc
-            </Button>
-          </div>
-          {!isLoading && answer && (
-            <div className="absolute right-0 top-0 mt-3 mr-16 hidden md:block">
-              <Button type="text" size="tiny" onClick={handleResetPrompt}>
-                Try again
-              </Button>
+    <div>
+      <form onSubmit={handleSubmit}>
+        <div className="grid gap-4 py-4 text-slate-700">
+          {question && (
+            <div className="flex gap-4">
+              <span className="bg-slate-100 dark:bg-slate-300 p-2 w-8 h-8 rounded-full text-center flex items-center justify-center">
+                <User width={18} />{" "}
+              </span>
+              <p className="mt-0.5 font-semibold text-slate-700 dark:text-slate-100">
+                {question}
+              </p>
             </div>
           )}
+
+          {isLoading && (
+            <div className="animate-spin relative flex w-5 h-5 ml-2">
+              <Loader />
+            </div>
+          )}
+
+          {hasError && (
+            <div className="flex items-center gap-4">
+              <span className="bg-red-100 p-2 w-8 h-8 rounded-full text-center flex items-center justify-center">
+                <Frown width={18} />
+              </span>
+              <span className="text-slate-700 dark:text-slate-100">
+                Sad news, the search has failed! Please try again.
+              </span>
+            </div>
+          )}
+
+          {answer && !hasError ? (
+            <div className="flex items-center gap-4 dark:text-white">
+              <span className="bg-green-500 p-2 w-8 h-8 rounded-full text-center flex items-center justify-center">
+                <Wand width={18} className="text-white" />
+              </span>
+              <h3 className="font-semibold">Answer:</h3>
+              {answer}
+            </div>
+          ) : null}
+
+          <div className="relative">
+            <input
+              placeholder="Ask a question..."
+              name="search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="col-span-3"
+            />
+            <CornerDownLeft
+              className={`absolute top-3 right-5 h-4 w-4 text-gray-300 transition-opacity ${
+                search ? "opacity-100" : "opacity-0"
+              }`}
+            />
+          </div>
+          <div className="text-xs text-gray-500 dark:text-gray-100">
+            Or try:{" "}
+            <button
+              type="button"
+              className="px-1.5 py-0.5
+                  bg-slate-50 dark:bg-gray-500
+                  hover:bg-slate-100 dark:hover:bg-gray-600
+                  rounded border border-slate-200 dark:border-slate-600
+                  transition-colors"
+              onClick={(_) =>
+                setSearch(
+                  "Create a table called profiles with fields id, name, email"
+                )
+              }
+            >
+              Create a table called profiles with fields id, name, email
+            </button>
+          </div>
         </div>
 
-        {!isLoading && !answer && (
-          <div className="">
-            <div className="mt-2">
-              <h2 className="text-sm text-scale-900">
-                Not sure where to start?
-              </h2>
-
-              <ul className="text-sm mt-4 text-scale-1000 grid md:flex gap-4 flex-wrap max-w-3xl">
-                {questions.map((question) => (
-                  <li>
-                    <button
-                      className="hover:bg-slate-400 hover:dark:bg-slate-400 px-4 py-2 bg-slate-300 dark:bg-slate-200 rounded-lg transition-colors"
-                      onClick={() => {
-                        setQuery(question);
-                        handleConfirm(question);
-                      }}
-                    >
-                      {question}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        )}
-        {answer && (
-          <div className="px-4 py-4 rounded-lg overflow-y-auto bg-scale-200">
-            {cantHelp ? (
-              <p className="flex flex-col gap-4 items-center p-4">
-                <div className="grid md:flex items-center gap-2 mt-4 text-center justify-items-center">
-                  <IconAlertCircle />
-                  <p>Sorry, I don&apos;t know how to help with that.</p>
-                </div>
-                <Button
-                  size="tiny"
-                  type="secondary"
-                  onClick={handleResetPrompt}
-                >
-                  Try again?
-                </Button>
-              </p>
-            ) : (
-              <div className="prose dark:prose-dark">
-                <ReactMarkdown
-                  linkTarget="_blank"
-                  remarkPlugins={[remarkGfm]}
-                  transformLinkUri={(href) => {
-                    const supabaseUrl = new URL("https://supabase.com");
-                    const linkUrl = new URL(href, "https://supabase.com");
-
-                    if (linkUrl.origin === supabaseUrl.origin) {
-                      return linkUrl.toString();
-                    }
-
-                    return href;
-                  }}
-                  components={components}
-                >
-                  {answer}
-                </ReactMarkdown>
-              </div>
-            )}
-          </div>
-        )}
-        {isLoading && (
-          <div className="p-6 grid gap-6 mt-4">
-            <Loading active>{}</Loading>
-            <p className="text-lg text-center">Searching for results</p>
-          </div>
-        )}
-        <div className="border-t border-scale-600 mt-4 text-scale-900">
-          <div className="flex justify-between items-center py-2 text-xs">
-            <div className="flex items-centerp gap-1 pt-3 pb-1">
-              <span>Powered by OpenAI.</span>
-              <a href="" className="underline">
-                Read the blog post
-              </a>
-            </div>
-            <div className="flex items-center gap-6 py-1">
-              {status ? (
-                <span className="bg-scale-400 rounded-lg py-1 px-2 items-center gap-2 hidden md:flex">
-                  {(isLoading || isResponding) && (
-                    <IconLoader size={14} className="animate-spin" />
-                  )}
-                  {status}
-                </span>
-              ) : (
-                <></>
-              )}
-              <Image
-                width={30}
-                height={34}
-                src={isDarkMode ? clippyImageDark : clippyImage}
-                alt="Clippy"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    </Modal>
+        <button type="submit" className="bg-red-500">
+          Ask
+        </button>
+      </form>
+    </div>
   );
-};
-
-export default ClippyModal;
+}

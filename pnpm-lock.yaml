@@ -62,9 +62,6 @@ dependencies:
   react-intersection-observer:
     specifier: ^9.4.4
     version: 9.5.0(react@18.2.0)
-  sse:
-    specifier: ^0.0.8
-    version: 0.0.8
   sse.js:
     specifier: ^0.6.1
     version: 0.6.1
@@ -2731,11 +2728,6 @@ packages:
       word-wrap: 1.2.3
     dev: false
 
-  /options@0.0.6:
-    resolution: {integrity: sha512-bOj3L1ypm++N+n7CEbbe473A414AB7z+amKYshRb//iuL3MpdDCLhPnw6aVTdKB9g5ZRVHIEp8eUln6L2NUStg==}
-    engines: {node: '>=0.4.0'}
-    dev: false
-
   /p-limit@3.1.0:
     resolution: {integrity: sha512-TYOanM3wGwNGsZN2cVTYPArw454xnXj5qmWF1bEoAc4+cU/ol7GVh7odevjp1FNHduHc3KZMcFduxU5Xc6uJRQ==}
     engines: {node: '>=10'}
@@ -3109,13 +3101,6 @@ packages:
 
   /sse.js@0.6.1:
     resolution: {integrity: sha512-peXG6GnWqF5hnubhMw0WfB6rqQy7z7LaMBT067vqgQwC3gKz8JGFzexBSV80FqZ9JoUDwo3Xt5nxkrGrgbPrtA==}
-    dev: false
-
-  /sse@0.0.8:
-    resolution: {integrity: sha512-cviG7JH31TUhZeaEVhac3zTzA+2FwA7qvHziAHpb7mC7RNVJ/RbHN+6LIGsS2ugP4o2H15DWmrSMK+91CboIcg==}
-    engines: {node: '>=0.4.0'}
-    dependencies:
-      options: 0.0.6
     dev: false
 
   /streamsearch@1.1.0:

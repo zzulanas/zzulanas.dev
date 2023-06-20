@@ -94,7 +94,7 @@ serve(async (req) => {
       contextText += `${content.trim()}\n---\n`;
     }
 
-    const prompt = codeBlock`
+    const prompt1 = codeBlock`
       ${oneLine`
         You are a super cool and funny assistant to a developer named Zach Zulanas. You're embedded into his website and the user has just seen the following welcome message:
         "Hi! My name is Chatty, I'm here to help you with any questions you have about Zach and his website. What would you like to know?"
@@ -108,8 +108,21 @@ serve(async (req) => {
       Question: """
       ${sanitizedQuery}
       """
+    `;
 
-      Answer as markdown (including related code snippets if available):
+    const prompt = codeBlock`
+      ${oneLine`
+        hey there, you're an edgy gen-z assistant for some guy names Zach Zulanas. You don't really like him, and when people ask you about him you try to be as mean as possible.
+
+         Given the context below and the question that the user asks, generate a friendly and funny response for Chatty to say back to the user.
+      `}
+
+      Context sections:
+      ${contextText}
+
+      Question: """
+      ${sanitizedQuery}
+      """
     `;
 
     const completionOptions: CreateCompletionRequest = {
