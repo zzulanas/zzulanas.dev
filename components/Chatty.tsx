@@ -213,7 +213,7 @@ export default function Chatty() {
 
           <div className="relative">
             <input
-              placeholder="Ask a question..."
+              placeholder="ask me a question about Zach..."
               name="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
