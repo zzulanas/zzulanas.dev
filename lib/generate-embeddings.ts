@@ -6,15 +6,15 @@ const openAi = new OpenAIApi(configuration);
 
 const documents = [
   "zach is a software engineer",
-  "zach works at NBCUniversal",
+  "zach works at NBCUniversal (aka NBCU) as a software engineer",
   "zach rock climbs in his free time",
   "zach lives in Brooklyn New York",
-  "zach went to school at University of Santa Cruz California and got his degree in Computer Science",
+  "zach went to school at University of California, Santa Cruz and got his Bachelor's degree in Computer Science in 2021",
   "zach is afraid of heights",
   "zach's email is zzulanas@gmail.com",
   "zach is originally from Sacramento, California",
   "zach also enjoys doing photography, specifically film photos",
-  "zach loves good coffee, if you have coffee recs he would love to hear them, his favorite coffee shop is Sey Coffee in Brooklyn",
+  "zach loves good coffee, if you have coffee recs he would love to hear them",
   "zach loves nature and hiking, now that he lives in NYC he doesn't do it as much, but he still loves it",
   "zach loves to travel, his favorite place he's been to is Norway",
   "zach once cut Steve Wozniak in line when he was 11",

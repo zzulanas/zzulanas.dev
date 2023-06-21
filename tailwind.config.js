@@ -7,7 +7,13 @@ module.exports = {
   ],
   theme: {
     colors: {
-      "tan": "#e0dad1"
+      "tan": "#e0dad1",
+      "black": "#000000",
+      "white": "#ffffff",
+      "gray": "#f5f5f5",
+      "red": "#ff0000",
+      "green": "#00ff00",
+      "blue": "#0000ff",
     },
     extend: {
       animation: {

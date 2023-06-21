@@ -13,7 +13,7 @@ export default function Home() {
           <h1 className="text-8xl">Zach Zulanas</h1>
           <h2 className="text-3xl">big nerd</h2>
         </div>
-        <div className="basis-2/3">
+        <div className="basis-2/3 flex items-end">
           <div className="mb-6">
             <Chatty />
           </div>
