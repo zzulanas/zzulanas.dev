@@ -9,8 +9,19 @@ const documents = [
   "zach works at NBCUniversal",
   "zach rock climbs in his free time",
   "zach lives in Brooklyn New York",
-  "zach went to school at University of Santa Cruz California",
+  "zach went to school at University of Santa Cruz California and got his degree in Computer Science",
   "zach is afraid of heights",
+  "zach's email is zzulanas@gmail.com",
+  "zach is originally from Sacramento, California",
+  "zach also enjoys doing photography, specifically film photos",
+  "zach loves good coffee, if you have coffee recs he would love to hear them, his favorite coffee shop is Sey Coffee in Brooklyn",
+  "zach loves nature and hiking, now that he lives in NYC he doesn't do it as much, but he still loves it",
+  "zach loves to travel, his favorite place he's been to is Norway",
+  "zach once cut Steve Wozniak in line when he was 11",
+  "zach was once a child model for the Old Navy website",
+  "zach and his friends helped make the first hackathon for their high school",
+  "zach was president of a consulting club in college",
+  "zach was a wildlife docent in Point Reyes National Seashore",
 ];
 
 async function generateEmbeddings(documents: string[]) {

@@ -102,6 +102,7 @@ export async function POST(req: NextRequest) {
     }
 
     const contextMessages: ChatCompletionRequestMessage[] = messages.map(
+      // @ts-ignore
       ({ role, content }) => {
         if (
           ![
