@@ -1,5 +1,5 @@
 import type { NextRequest } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { SupabaseClient, createClient } from "@supabase/supabase-js";
 import { codeBlock, oneLine } from "common-tags";
 import GPT3Tokenizer from "gpt3-tokenizer";
 import {
@@ -30,9 +30,7 @@ const openai = new OpenAIApi(config);
 
 export const runtime = "edge";
 
-async function getContext(message: string) {
-  const supabaseClient = createRouteHandlerClient({ cookies });
-
+async function getContext(message: string, supabaseClient: SupabaseClient) {
   const embeddingResponse = await openai.createEmbedding({
     model: "text-embedding-ada-002",
     input: message.replaceAll("\n", " "),
@@ -81,9 +79,10 @@ async function getContext(message: string) {
   return contextText;
 }
 
-async function upsertConversationDB(id: string) {
-  const supabaseClient = createRouteHandlerClient({ cookies });
-
+async function upsertConversationDB(
+  id: string,
+  supabaseClient: SupabaseClient
+) {
   const { data, error } = await supabaseClient.from("conversations").upsert([
     {
       id: id,
@@ -114,8 +113,12 @@ export async function POST(req: NextRequest) {
         "Missing environment variable SUPABASE_SERVICE_ROLE_KEY"
       );
     }
+
     const { messages, id: conversationId } = await req.json();
-    await upsertConversationDB(conversationId);
+
+    const supabaseClient = createRouteHandlerClient({ cookies });
+
+    await upsertConversationDB(conversationId, supabaseClient);
     const currMessage = messages[messages.length - 1].content;
 
     if (!messages) {
@@ -149,12 +152,10 @@ export async function POST(req: NextRequest) {
       throw new Error("No message with role 'user'");
     }
 
-    const supabaseClient = createRouteHandlerClient({ cookies });
-
     const configuration = new Configuration({ apiKey: openAiKey });
     const openai = new OpenAIApi(configuration);
 
-    let contextText = await getContext(currMessage);
+    let contextText = await getContext(currMessage, supabaseClient);
 
     const initMessages: ChatCompletionRequestMessage[] = [
       {
