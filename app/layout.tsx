@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import cx from "classnames";
 
 import { crimsonPro, martelSans, palanquinDark } from "./fonts";
+import Footer from "@/components/layout/footer";
 
 export const metadata = {
   title: "zachary zulanas",
@@ -28,9 +29,10 @@ export default function RootLayout({
         <Suspense fallback={"..."}>
           <Nav />
         </Suspense>
-        <main className="flex min-h-screen w-full flex-col justify-center py-32">
+        <main className="flex min-h-screen w-full flex-col justify-center py-32 max-w-screen-xl mx-auto">
           {children}
         </main>
+        <Footer />
       </body>
     </html>
   );

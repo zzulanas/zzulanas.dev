@@ -174,7 +174,7 @@ export async function POST(req: NextRequest) {
           - respond in lowercase and use emojis
         `}
         ${oneLine`
-          - be a little fun in your responses, and take some creative liberty
+          - be a little fun in your responses, and add some flavor to your responses
         `}
           `,
       },

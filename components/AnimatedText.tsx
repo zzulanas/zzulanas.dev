@@ -1,5 +1,4 @@
-import { motion, useMotionTemplate, useMotionValue } from "framer-motion";
-import { MouseEvent } from "react";
+import { motion } from "framer-motion";
 
 interface TitleProps {
   title: string;
@@ -7,7 +6,7 @@ interface TitleProps {
 }
 
 export default function AnimatedText(props: TitleProps) {
-  const sentence = {
+  const sentenceIn = {
     hidden: { opacity: 1 },
     visible: {
       opacity: 1,
@@ -18,25 +17,30 @@ export default function AnimatedText(props: TitleProps) {
     },
   };
 
-  const letter = {
+  const letterIn = {
     hidden: { opacity: 0, y: 50 },
     visible: {
       opacity: 1,
       y: 0,
     },
+    exit: {
+      opacity: 0,
+      y: 50,
+    },
   };
 
   return (
     <motion.div
-      variants={sentence}
+      variants={sentenceIn}
       initial="hidden"
       animate="visible"
+      exit="exit"
       aria-label={props.title}
       className={props.className}
     >
       {props.title.split("").map((char: string, index: number) => {
         return (
-          <motion.span key={char + "-" + index} variants={letter}>
+          <motion.span key={char + "-" + index} variants={letterIn}>
             {char}
           </motion.span>
         );
