@@ -18,7 +18,7 @@ export default function DraggableText(props: DragProps) {
                 key={char + "-" + idx}
                 drag
                 dragElastic={0.9}
-                className="inline-block"
+                className="inline-block cursor-pointer active:cursor-grabbing"
               >
                 {char}
               </motion.span>

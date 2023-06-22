@@ -3,6 +3,7 @@
 import { useChat } from "ai/react";
 import cx from "classnames";
 import { BrainCog, UserCircle2 } from "lucide-react";
+import { motion } from "framer-motion";
 
 const inputStyle = {
   backgroundColor: "transparent",
@@ -19,15 +20,16 @@ export default function Chatty(props: ChatProps) {
     });
 
   return (
-    <div
+    <motion.div
       className={cx(
-        "overflow-auto p-4 w-full h-full rounded-lg shadow-md bg-gradient-to-br from-fuschia-300 to to-blue-steel-300",
+        "overflow-auto p-4 w-full h-full rounded-lg shadow-md bg-gradient-to-br from-fuschia-300 to to-blue-steel-300 cursor-pointer active:cursor-grabbing",
         props.className,
         isLoading ? "background-animate" : ""
       )}
+      drag
     >
       <div className="bg-blue-steel-100 rounded-lg">
-        <div className="overflow-auto h-80 w-full flex flex-col justify-end p-4 bg-blue-steel-50 border border-gray-200 rounded-t-lg">
+        <div className="overflow-auto h-80 w-full flex flex-col justify-end p-4 bg-blue-steel-50 border border-gray-200 rounded-t-lg cursor-default">
           {messages.map((m, idx) => (
             <div
               key={m.id}
@@ -61,6 +63,6 @@ export default function Chatty(props: ChatProps) {
           />
         </form>
       </div>
-    </div>
+    </motion.div>
   );
 }
