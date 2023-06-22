@@ -40,7 +40,9 @@ module.exports = {
       emerald: colors.emerald,
       indigo: colors.indigo,
       yellow: colors.yellow,
-
+      pink: colors.pink,
+      orange: colors.orange,
+      fuschia: colors.fuchsia,
     },
     extend: {
       animation: {

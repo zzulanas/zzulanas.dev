@@ -21,10 +21,9 @@ export default function Chatty(props: ChatProps) {
   return (
     <div
       className={cx(
-        "overflow-auto p-4 w-full h-full rounded-lg bg-blue-steel-200 shadow-md",
+        "overflow-auto p-4 w-full h-full rounded-lg shadow-md bg-gradient-to-br from-fuschia-300 to to-blue-steel-300",
         props.className,
-        isLoading &&
-          "bg-gradient-to-br from pink-300 to to-blue-steel-300 background-animate"
+        isLoading ? "background-animate" : ""
       )}
     >
       <div className="bg-blue-steel-100 rounded-lg">
@@ -37,23 +36,17 @@ export default function Chatty(props: ChatProps) {
                   ? "text-grayscale-800"
                   : "text-blue-steel-500",
                 `opacity-${100 - idx * 10}`,
-                "mb-2 flex flex-row items-center"
+                "mb-2 flex flex-row items-start"
               )}
             >
-              {m.role === "user" ? (
-                <UserCircle2
-                  size={32}
-                  strokeWidth={1.5}
-                  className="inline-block mr-1"
-                />
-              ) : (
-                <BrainCog
-                  size={32}
-                  strokeWidth={1.5}
-                  className="inline-block mr-1"
-                />
-              )}
-              {m.role === "user" ? "User" : "AI"}: {m.content}
+              <div className="inline-block mr-1 flex-none align-self-start">
+                {m.role === "user" ? (
+                  <UserCircle2 size={32} strokeWidth={1.5} />
+                ) : (
+                  <BrainCog size={32} strokeWidth={1.5} />
+                )}
+              </div>
+              <div>{m.content}</div>
             </div>
           ))}
         </div>
