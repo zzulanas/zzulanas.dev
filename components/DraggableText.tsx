@@ -18,7 +18,6 @@ export default function DraggableText(props: DragProps) {
                 key={char + "-" + idx}
                 drag
                 dragElastic={0.9}
-                dragSnapToOrigin={true}
                 className="inline-block"
               >
                 {char}
