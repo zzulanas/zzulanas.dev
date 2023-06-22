@@ -15,9 +15,6 @@ import {
   ChatCompletionRequestMessageRoleEnum,
   CreateChatCompletionRequest,
 } from "openai";
-import { v4 } from "uuid";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
 
 const openAiKey = process.env.OPENAI_KEY;
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -30,6 +27,12 @@ const openai = new OpenAIApi(config);
 
 export const runtime = "edge";
 
+/**
+ * This function gets the context for the question
+ * @param message
+ * @param supabaseClient
+ * @returns
+ */
 async function getContext(message: string, supabaseClient: SupabaseClient) {
   const embeddingResponse = await openai.createEmbedding({
     model: "text-embedding-ada-002",
@@ -79,7 +82,15 @@ async function getContext(message: string, supabaseClient: SupabaseClient) {
   return contextText;
 }
 
-async function upsertConversationDB(
+/**
+ * This function upserts a conversation into the DB
+ * @param id
+ * @param supabaseClient
+ * @returns
+ * @throws ApplicationError
+ * @throws UserError
+ */
+export async function upsertConversationDB(
   id: string,
   supabaseClient: SupabaseClient
 ) {
@@ -114,10 +125,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Persist session as false cause https://github.com/vercel/next.js/issues/46356 is kinda broken rn
+    const supabaseClient = createClient(supabaseUrl!, supabaseServiceKey!, {
+      auth: {
+        persistSession: false,
+      },
+    });
+
     const { messages, id: conversationId } = await req.json();
-
-    const supabaseClient = createRouteHandlerClient({ cookies });
-
     await upsertConversationDB(conversationId, supabaseClient);
     const currMessage = messages[messages.length - 1].content;
 
