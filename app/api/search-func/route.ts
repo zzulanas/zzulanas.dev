@@ -79,6 +79,7 @@ async function getContext(message: string) {
 }
 
 export async function POST(req: NextRequest) {
+  // TODO: Maybe reimagine this using LangChain? seems a bit better for context injection https://sdk.vercel.ai/docs/guides/langchain
   try {
     if (!openAiKey) {
       throw new ApplicationError("Missing environment variable OPENAI_KEY");

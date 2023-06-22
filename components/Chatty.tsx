@@ -7,23 +7,25 @@ const inputStyle = {
   backgroundColor: "transparent",
 };
 
-export default function Chatty() {
+interface ChatProps {
+  className?: string;
+}
+
+export default function Chatty(props: ChatProps) {
   const { messages, input, handleInputChange, handleSubmit } = useChat({
     api: "/api/search-func",
   });
 
   return (
-    <div className="px-10">
-      <div className="overflow-auto h-60 flex flex-col justify-end">
+    <div className={cx("px-10 w-full h-full", props.className)}>
+      <div className="overflow-auto h-80 w-full flex flex-col justify-end max-w-sm p-6 bg-blue-steel-50 border border-gray-200 rounded-lg shadow shadow-md">
         {messages.map((m) => (
           <div
             key={m.id}
             className={cx(
-              m.role === "user" ? "text-gray" : "text-black",
-              "mb-1 px-"
+              m.role === "user" ? "text-grayscale-800" : "text-grayscale-600"
             )}
           >
-            <div className="h-8 w-8 rounded-full ring-1 ring-black"></div>
             {m.role}: {m.content}
           </div>
         ))}

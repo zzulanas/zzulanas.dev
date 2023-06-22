@@ -22,6 +22,11 @@ const documents = [
   "zach and his friends helped make the first hackathon for their high school",
   "zach was president of a consulting club in college",
   "zach was a wildlife docent in Point Reyes National Seashore",
+  `the following is an excerpt from zach's resume entry at NBCUniversal: Implemented a new linting system and standardized linting rules, resulting in a 50% reduction in build times and improved code quality across the team.
+  developed API using FastAPI, enabling seamless integration of distribution rights information for various teams within NBCUniversal.
+  Engineered an efficient ETL pipeline using to export database content to CSV format, facilitating data accessibility and analysis for the data and analytics team.
+  Established critical AWS RDS infrastructure to manage disaster recovery and backup processes, ensuring data integrity and minimizing downtime.
+  Created permissions and user management system in full stack application, enabling users to manage their own permissions and reducing the workload of the team."`,
 ];
 
 async function generateEmbeddings(documents: string[]) {

@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 html {
-  background-color: #e0dad1;
+  background-color: blue-steel-200;
 }
 
 .link-underline {
