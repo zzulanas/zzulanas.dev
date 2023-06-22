@@ -81,7 +81,7 @@ async function getContext(message: string) {
   return contextText;
 }
 
-export async function upsertConversationDB(id: string) {
+async function upsertConversationDB(id: string) {
   const supabaseClient = createRouteHandlerClient({ cookies });
 
   const { data, error } = await supabaseClient.from("conversations").upsert([
