@@ -10,6 +10,7 @@
     "embeddings": "tsx lib/generate-embeddings.ts"
   },
   "dependencies": {
+    "@supabase/auth-helpers-nextjs": "^0.7.2",
     "@supabase/supabase-js": "^2.24.0",
     "@types/node": "20.2.5",
     "@types/react": "18.2.7",
@@ -38,10 +39,12 @@
     "tailwindcss": "3.3.2",
     "tailwindcss-animate": "^1.0.5",
     "tiktoken": "^1.0.8",
-    "typescript": "5.0.4"
+    "typescript": "5.0.4",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@types/common-tags": "^1.8.1",
+    "@types/uuid": "^9.0.2",
     "supabase": "^1.68.6",
     "ts-node": "^10.9.1",
     "tsx": "^3.12.7"

@@ -15,6 +15,9 @@ import {
   ChatCompletionRequestMessageRoleEnum,
   CreateChatCompletionRequest,
 } from "openai";
+import { v4 } from "uuid";
+import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
+import { cookies } from "next/headers";
 
 const openAiKey = process.env.OPENAI_KEY;
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -28,7 +31,7 @@ const openai = new OpenAIApi(config);
 export const runtime = "edge";
 
 async function getContext(message: string) {
-  const supabaseClient = createClient(supabaseUrl!, supabaseServiceKey!);
+  const supabaseClient = createRouteHandlerClient({ cookies });
 
   const embeddingResponse = await openai.createEmbedding({
     model: "text-embedding-ada-002",
@@ -78,6 +81,23 @@ async function getContext(message: string) {
   return contextText;
 }
 
+export async function upsertConversationDB(id: string) {
+  const supabaseClient = createRouteHandlerClient({ cookies });
+
+  const { data, error } = await supabaseClient.from("conversations").upsert([
+    {
+      id: id,
+      created_at: new Date(),
+    },
+  ]);
+
+  if (error) {
+    throw new ApplicationError("Failed to create conversation on DB", error);
+  }
+
+  return data;
+}
+
 export async function POST(req: NextRequest) {
   // TODO: Maybe reimagine this using LangChain? seems a bit better for context injection https://sdk.vercel.ai/docs/guides/langchain
   try {
@@ -94,8 +114,8 @@ export async function POST(req: NextRequest) {
         "Missing environment variable SUPABASE_SERVICE_ROLE_KEY"
       );
     }
-
-    const { messages } = await req.json();
+    const { messages, id: conversationId } = await req.json();
+    await upsertConversationDB(conversationId);
     const currMessage = messages[messages.length - 1].content;
 
     if (!messages) {
@@ -129,7 +149,7 @@ export async function POST(req: NextRequest) {
       throw new Error("No message with role 'user'");
     }
 
-    const supabaseClient = createClient(supabaseUrl, supabaseServiceKey);
+    const supabaseClient = createRouteHandlerClient({ cookies });
 
     const configuration = new Configuration({ apiKey: openAiKey });
     const openai = new OpenAIApi(configuration);
@@ -181,7 +201,6 @@ export async function POST(req: NextRequest) {
     ];
 
     const totalMessages = [...initMessages, ...contextMessages];
-    console.log(totalMessages);
 
     const chatOptions: CreateChatCompletionRequest = {
       model: "gpt-3.5-turbo",
@@ -194,7 +213,30 @@ export async function POST(req: NextRequest) {
     const response = await openai.createChatCompletion(chatOptions);
 
     // Transform the response into a readable stream
-    const stream = OpenAIStream(response);
+    const stream = OpenAIStream(response, {
+      onCompletion: async (completion: string) => {
+        const lastMessageFromUser = totalMessages[totalMessages.length - 1];
+
+        const { data, error } = await supabaseClient.from("messages").insert([
+          {
+            from_who: ChatCompletionRequestMessageRoleEnum.User,
+            to_who: ChatCompletionRequestMessageRoleEnum.Assistant,
+            conversation_id: conversationId,
+            contents: lastMessageFromUser.content,
+          },
+          {
+            from_who: ChatCompletionRequestMessageRoleEnum.Assistant,
+            to_who: ChatCompletionRequestMessageRoleEnum.User,
+            conversation_id: conversationId,
+            contents: completion,
+          },
+        ]);
+
+        if (error) {
+          throw new ApplicationError("Failed to insert messages", error);
+        }
+      },
+    });
 
     // Return a StreamingTextResponse, which can be consumed by the client
     return new StreamingTextResponse(stream);

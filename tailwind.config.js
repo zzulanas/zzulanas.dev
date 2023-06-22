@@ -45,6 +45,9 @@ module.exports = {
       fuschia: colors.fuchsia,
     },
     extend: {
+      transitionProperty: {
+        'height': 'height',
+      },
       animation: {
         text: 'text 5s ease infinite',
       },
