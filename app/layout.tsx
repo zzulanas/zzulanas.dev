@@ -2,6 +2,7 @@ import Nav from "@/components/layout/nav";
 import "./globals.css";
 import { Suspense } from "react";
 import cx from "classnames";
+import { Analytics } from "@vercel/analytics/react";
 
 import { crimsonPro, martelSans, palanquinDark } from "./fonts";
 import Footer from "@/components/layout/footer";
@@ -31,6 +32,7 @@ export default function RootLayout({
         </Suspense>
         <main className="flex min-h-screen w-full flex-col justify-center py-32 max-w-screen-xl mx-auto">
           {children}
+          <Analytics />
         </main>
         <Footer />
       </body>
