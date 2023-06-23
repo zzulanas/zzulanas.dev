@@ -90,7 +90,7 @@ async function getContext(message: string, supabaseClient: SupabaseClient) {
  * @throws ApplicationError
  * @throws UserError
  */
-export async function upsertConversationDB(
+async function upsertConversationDB(
   id: string,
   supabaseClient: SupabaseClient
 ) {
