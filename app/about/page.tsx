@@ -5,7 +5,6 @@ export default function About() {
     <div className="flex flex-col justify-center items-start">
       <div>
         <h1 className="text-8xl">hi</h1>
-        <Image src="" />
       </div>
       <p className="text-2xl">
         I&apos;m a software engineer based in NYC. I&apos;m currently working at{" "}
