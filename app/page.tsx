@@ -1,4 +1,5 @@
 "use client";
+import AnimatedText from "@/components/AnimatedText";
 import Chatty from "@/components/Chatty";
 import DraggableText from "@/components/DraggableText";
 import { motion } from "framer-motion";
@@ -20,18 +21,24 @@ export default function Home() {
     >
       <div className="basis-1/3">
         <h1 className="text-8xl">
-          <DraggableText
-            text={name}
-            parentRef={constraintsRef}
-            dragEnabled={dragEnabled}
-          />
+          {!dragEnabled && <AnimatedText title={name} />}
+          {dragEnabled && (
+            <DraggableText
+              text={name}
+              parentRef={constraintsRef}
+              dragEnabled={dragEnabled}
+            />
+          )}
         </h1>
         <h2 className="text-4xl">
-          <DraggableText
-            text={title}
-            parentRef={constraintsRef}
-            dragEnabled={dragEnabled}
-          />
+          {!dragEnabled && <AnimatedText title={title} />}
+          {dragEnabled && (
+            <DraggableText
+              text={title}
+              parentRef={constraintsRef}
+              dragEnabled={dragEnabled}
+            />
+          )}
         </h2>
         {dragEnabled && (
           <h2 className="text-2xl text-grayscale-300">

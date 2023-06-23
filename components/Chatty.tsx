@@ -2,10 +2,10 @@
 
 import { useChat } from "ai/react";
 import cx from "classnames";
-import { BrainCog, CornerUpRight, UserCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
-import { v4 } from "uuid";
-import { useEffect, useId, useRef, useState } from "react";
+import { BrainCog, CornerUpRight, UserCircle2 } from "lucide-react";
+import { useEffect, useId, useRef } from "react";
+import AnimatedText from "./AnimatedText";
 
 const inputStyle = {
   backgroundColor: "transparent",
@@ -19,13 +19,19 @@ interface ChatProps {
 export default function Chatty(props: ChatProps) {
   const chatId = useId();
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading } =
-    useChat({
-      api: "/api/search-func",
-      body: {
-        id: chatId,
-      },
-    });
+  const {
+    messages,
+    input,
+    handleInputChange,
+    append,
+    handleSubmit,
+    isLoading,
+  } = useChat({
+    api: "/api/search-func",
+    body: {
+      id: chatId,
+    },
+  });
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -56,21 +62,15 @@ export default function Chatty(props: ChatProps) {
           {messages.length === 0 &&
             templateQuestions.map((q, idx) => (
               <div className="text-grayscale-800 opacity-100" key={q + idx}>
-                <div className="mb-2 flex flex-row items-start">
-                  <motion.div
-                    className="mr-1"
-                    whileHover={{
-                      scale: 1.2,
-                      transition: {
-                        duration: 0.2,
-                      },
-                    }}
-                    whileTap={{ scale: 0.9 }}
-                  >
+                <motion.button
+                  className="mb-2 flex flex-row items-start hover:bg-blue-steel-200 transition-all rounded-sm p-2"
+                  onClick={() => append({ role: "user", content: q })}
+                >
+                  <div className="mr-1">
                     <CornerUpRight />
-                  </motion.div>
-                  <div>{q}</div>
-                </div>
+                  </div>
+                  <AnimatedText title={q} />
+                </motion.button>
               </div>
             ))}
           {messages.length >= 1 &&
