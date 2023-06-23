@@ -51,7 +51,7 @@ export default function Chatty(props: ChatProps) {
   return (
     <motion.div
       className={cx(
-        "overflow-auto p-4 w-full h-full rounded-lg backdrop-blur-lg shadow-md bg-gradient-to-br from-orange-400 via-fuschia-400 to-emerald-400 cursor-pointer active:cursor-grabbing",
+        "overflow-auto p-4 rounded-lg backdrop-blur-lg shadow-md bg-gradient-to-br from-orange-400 via-fuschia-400 to-emerald-400 cursor-pointer active:cursor-grabbing",
         props.className,
         isLoading ? "background-animate-thinking" : "background-animate-idle"
       )}
