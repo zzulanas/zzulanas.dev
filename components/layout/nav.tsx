@@ -16,7 +16,7 @@ export default function Nav() {
   const isBlogSelected = pathname === "/blog";
   return (
     <LayoutGroup>
-      <div className={"fixed top-0 w-full bg-white/0 z-30 transition-all"}>
+      <div className={"fixed top-0 w-full bg-white z-30 transition-all"}>
         <motion.div className="mx-10 my-5 flex h-16 max-w-screen-xl items-center justify-between xl:mx-auto">
           <Link href="/" className="flex items-center font-display">
             <AnimatedText title="/zzulanas.dev" className="text-5xl" />

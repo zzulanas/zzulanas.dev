@@ -16,10 +16,10 @@ export default function Home() {
   // TODO: look into Drag Controls, try and mimic gravity when hovering over title text
   return (
     <div
-      className="flex flex-col md:flex-row justify-around items-center h-full px-10"
+      className="flex flex-col md:flex-row justify-around items-center h-full md:px-10 px-3"
       ref={constraintsRef}
     >
-      <div className="basis-1/3">
+      <div className="basis-1/3 mb-10 md:mb-0">
         <h1 className="text-8xl">
           {!dragEnabled && <AnimatedText title={name} />}
           {dragEnabled && (
