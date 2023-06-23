@@ -33,13 +33,15 @@ export default function Home() {
             dragEnabled={dragEnabled}
           />
         </h2>
-        <h2 className="text-2xl text-grayscale-300">
-          <DraggableText
-            text={hint}
-            parentRef={constraintsRef}
-            dragEnabled={dragEnabled}
-          />
-        </h2>
+        {dragEnabled && (
+          <h2 className="text-2xl text-grayscale-300">
+            <DraggableText
+              text={hint}
+              parentRef={constraintsRef}
+              dragEnabled={dragEnabled}
+            />
+          </h2>
+        )}
       </div>
       <div className="basis-2/3 flex items-stretch">
         <Chatty className="w-full h-full" dragEnabled={dragEnabled} />

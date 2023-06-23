@@ -5,7 +5,7 @@ import cx from "classnames";
 import { BrainCog, CornerUpRight, UserCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { v4 } from "uuid";
-import { useId } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 const inputStyle = {
   backgroundColor: "transparent",
@@ -18,21 +18,26 @@ interface ChatProps {
 
 export default function Chatty(props: ChatProps) {
   const chatId = useId();
+
   const { messages, input, handleInputChange, handleSubmit, isLoading } =
     useChat({
       api: "/api/search-func",
       body: {
         id: chatId,
       },
-      onResponse: (res) => {
-        console.log(res);
-      },
     });
+
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!isLoading && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isLoading]);
 
   const templateQuestions = [
     "What does Zach do?",
     "Where does Zach live?",
-    "What is Zach's favorite programming language?",
     "What does Zach do for fun?",
     "How did Zach build this site?",
   ];
@@ -40,21 +45,30 @@ export default function Chatty(props: ChatProps) {
   return (
     <motion.div
       className={cx(
-        "overflow-auto p-4 w-full h-full rounded-lg shadow-md bg-gradient-to-br from-orange-400 to to-emerald-400 cursor-pointer active:cursor-grabbing",
+        "overflow-auto p-4 w-full h-full rounded-lg backdrop-blur-lg shadow-md bg-gradient-to-br from-orange-400 via-fuschia-400 to-emerald-400 cursor-pointer active:cursor-grabbing",
         props.className,
         isLoading ? "background-animate-thinking" : "background-animate-idle"
       )}
       drag={props.dragEnabled}
     >
-      <motion.div className="bg-blue-steel-100 rounded-lg">
+      <motion.div className="bg-blue-steel-100 rounded-lg opacity-90 ">
         <div className="overflow-auto h-80 w-full flex flex-col justify-end p-4 bg-blue-steel-50 border border-gray-200 rounded-t-lg cursor-default">
           {messages.length === 0 &&
             templateQuestions.map((q, idx) => (
-              <div className="text-grayscale-800" key={q + idx}>
+              <div className="text-grayscale-800 opacity-100" key={q + idx}>
                 <div className="mb-2 flex flex-row items-start">
-                  <div className="mr-1">
+                  <motion.div
+                    className="mr-1"
+                    whileHover={{
+                      scale: 1.2,
+                      transition: {
+                        duration: 0.2,
+                      },
+                    }}
+                    whileTap={{ scale: 0.9 }}
+                  >
                     <CornerUpRight />
-                  </div>
+                  </motion.div>
                   <div>{q}</div>
                 </div>
               </div>
@@ -86,10 +100,16 @@ export default function Chatty(props: ChatProps) {
         <form onSubmit={handleSubmit} className="justify-start">
           <input
             value={input}
-            placeholder="ask me something about zach or choose a question above"
+            placeholder={
+              "ask me something about zach" +
+              (messages.length === 0 ? " or choose a question above" : "")
+            }
             onChange={handleInputChange}
             style={inputStyle}
             className="w-full h-10 px-4 mb-3 text-base placeholder-gray-600 text-gray-700 border-0 rounded-lg hover:text-black-700 focus:outline-none"
+            disabled={isLoading}
+            autoFocus
+            ref={inputRef}
           />
         </form>
       </motion.div>
