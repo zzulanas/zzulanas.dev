@@ -5,6 +5,7 @@ import { LayoutGroup, motion } from "framer-motion";
 import { riseWithFade, staggerChildren } from "@/utils/animations";
 import AnimatedText from "../AnimatedText";
 import { usePathname } from "next/navigation";
+import MenuButton from "../ui/MenuButton";
 
 // TODO: figure out how to get staggered animation for zzulanas.dev and rest of nav
 
@@ -16,13 +17,20 @@ export default function Nav() {
   const isBlogSelected = pathname === "/blog";
   return (
     <LayoutGroup>
-      <div className={"fixed top-0 w-full bg-white z-30 transition-all"}>
-        <motion.div className="mx-10 my-5 flex h-16 max-w-screen-xl items-center justify-between xl:mx-auto">
+      <div
+        className={
+          "fixed top-0 w-full bg-white z-30 transition-all border-b-2 shadow"
+        }
+      >
+        <motion.div className="md:mx-10 mx-4 my-5 flex h-16 max-w-screen-xl items-center justify-between xl:mx-auto ">
           <Link href="/" className="flex items-center font-display">
-            <AnimatedText title="/zzulanas.dev" className="text-5xl" />
+            <AnimatedText
+              title="/zzulanas.dev"
+              className="md:text-5xl text-3xl"
+            />
           </Link>
           <motion.div
-            className="mx-5 flex flex-row gap-4"
+            className="mx-5 flex md:flex-row flex-col gap-4 md:visible invisible"
             variants={staggerChildren}
           >
             <Link
@@ -62,6 +70,9 @@ export default function Nav() {
               />
             </Link>
           </motion.div>
+          <div className="md:hidden">
+            <MenuButton />
+          </div>
         </motion.div>
       </div>
     </LayoutGroup>
