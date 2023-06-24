@@ -2,7 +2,7 @@ import { Github, Linkedin, Twitter } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="flex flex-row justify-between h-16 mb-10">
+    <footer className="flex flex-row md:justify-between justify-center h-auto mb-10">
       <div className="flex flex-row justify-center items-center px-20">
         <a
           href="https://github.com/zzulanas/"

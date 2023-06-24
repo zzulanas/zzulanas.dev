@@ -3,7 +3,12 @@
 import { useChat } from "ai/react";
 import cx from "classnames";
 import { motion } from "framer-motion";
-import { BrainCog, CornerUpRight, UserCircle2 } from "lucide-react";
+import {
+  BrainCog,
+  ChevronRightSquare,
+  CornerUpRight,
+  UserCircle2,
+} from "lucide-react";
 import { useEffect, useId, useRef } from "react";
 import AnimatedText from "./AnimatedText";
 
@@ -33,6 +38,19 @@ export default function Chatty(props: ChatProps) {
     },
   });
 
+  const introTextAnimation = {
+    hidden: { opacity: 0, y: 50 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        delay: 0.4,
+        staggerChildren: 1,
+        duration: 0.8,
+      },
+    },
+  };
+
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -51,14 +69,17 @@ export default function Chatty(props: ChatProps) {
   return (
     <motion.div
       className={cx(
-        "overflow-auto p-4 rounded-lg backdrop-blur-lg shadow-md bg-gradient-to-br from-orange-400 via-fuschia-400 to-emerald-400 cursor-pointer active:cursor-grabbing",
+        "md:overflow-auto p-4 min-h-full rounded-lg grow backdrop-blur-lg shadow-md bg-gradient-to-br from-orange-400 via-fuschia-400 to-emerald-400 cursor-pointer active:cursor-grabbing",
         props.className,
         isLoading ? "background-animate-thinking" : "background-animate-idle"
       )}
       drag={props.dragEnabled}
+      variants={introTextAnimation}
+      initial="hidden"
+      animate="visible"
     >
-      <motion.div className="bg-blue-steel-100 rounded-lg opacity-90 ">
-        <div className="overflow-auto h-80 w-full flex flex-col justify-end p-4 bg-blue-steel-50 border border-gray-200 rounded-t-lg cursor-default">
+      <motion.div className="bg-blue-steel-100 rounded-lg opacity-90 h-full flex flex-col">
+        <div className="overflow-auto md:h-96 h-full w-full flex flex-col justify-end p-4 bg-blue-steel-50 border border-gray-200 rounded-t-lg cursor-default">
           {messages.length === 0 &&
             templateQuestions.map((q, idx) => (
               <div className="text-grayscale-800 opacity-100" key={q + idx}>
@@ -98,19 +119,30 @@ export default function Chatty(props: ChatProps) {
         </div>
 
         <form onSubmit={handleSubmit} className="justify-start">
-          <input
-            value={input}
-            placeholder={
-              "ask me something about zach" +
-              (messages.length === 0 ? " or choose a question above" : "")
-            }
-            onChange={handleInputChange}
-            style={inputStyle}
-            className="w-full h-10 px-4 mb-3 text-base placeholder-gray-600 text-gray-700 border-0 rounded-lg hover:text-black-700 focus:outline-none"
-            disabled={isLoading}
-            autoFocus
-            ref={inputRef}
-          />
+          <div className="flex flex-row h-12 px-4 items-center align-middle">
+            <input
+              value={input}
+              placeholder={
+                "ask me something about zach" +
+                (messages.length === 0 ? " or choose a question above" : "")
+              }
+              onChange={handleInputChange}
+              style={inputStyle}
+              className="w-full text-base placeholder-gray-600 text-gray-700 border-0 rounded-lg hover:text-black-700 focus:outline-none"
+              disabled={isLoading}
+              autoFocus
+              ref={inputRef}
+            />
+            <motion.button
+              whileHover={{
+                scale: 1.1,
+              }}
+              type="submit"
+              whileTap={{ scale: 0.9 }}
+            >
+              <ChevronRightSquare />
+            </motion.button>
+          </div>
         </form>
       </motion.div>
     </motion.div>

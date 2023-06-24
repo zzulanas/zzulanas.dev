@@ -30,7 +30,7 @@ export default function RootLayout({
         <Suspense fallback={"..."}>
           <Nav />
         </Suspense>
-        <main className="flex min-h-screen w-full flex-col justify-center py-32 max-w-screen-xl mx-auto">
+        <main className="flex min-h-screen w-full flex-col justify-center pt-32 pb-16 max-w-screen-xl mx-auto">
           {children}
           <Analytics />
         </main>
