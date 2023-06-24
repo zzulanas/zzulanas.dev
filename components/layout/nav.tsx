@@ -6,12 +6,13 @@ import { riseWithFade, staggerChildren } from "@/utils/animations";
 import AnimatedText from "../AnimatedText";
 import { usePathname } from "next/navigation";
 import MenuButton from "../ui/MenuButton";
+import { useState } from "react";
 
 // TODO: figure out how to get staggered animation for zzulanas.dev and rest of nav
 
 export default function Nav() {
   const pathname = usePathname();
-  console.log(pathname);
+  const [isOpen, setOpen] = useState(false);
   const isAboutSelected = pathname === "/about";
   const isProjectsSelected = pathname === "/projects";
   const isBlogSelected = pathname === "/blog";
@@ -70,10 +71,53 @@ export default function Nav() {
               />
             </Link>
           </motion.div>
-          <div className="md:hidden">
+          <div className="md:hidden" onClick={() => setOpen(!isOpen)}>
             <MenuButton />
           </div>
         </motion.div>
+        {isOpen && (
+          <motion.div
+            className="mx-5 flex md:flex-row flex-col gap-4 pb-4"
+            variants={staggerChildren}
+          >
+            <Link
+              href="/about"
+              className="group text-sky-600 transition duration-100"
+            >
+              <AnimatedText
+                title="about"
+                className={
+                  "text-2xl link link-underline link-underline-black text-black " +
+                  (isAboutSelected ? "selected-tab" : "")
+                }
+              />
+            </Link>
+            <Link
+              href="/projects"
+              className="group text-sky-600 transition duration-100"
+            >
+              <AnimatedText
+                title="projects"
+                className={
+                  "text-2xl link link-underline link-underline-black text-black " +
+                  (isProjectsSelected ? "selected-tab" : "")
+                }
+              />
+            </Link>
+            <Link
+              href="/blog"
+              className="group text-sky-600 transition duration-100"
+            >
+              <AnimatedText
+                title="blog"
+                className={
+                  "text-2xl link link-underline link-underline-black text-black " +
+                  (isBlogSelected ? "selected-tab" : "")
+                }
+              />
+            </Link>
+          </motion.div>
+        )}
       </div>
     </LayoutGroup>
   );
