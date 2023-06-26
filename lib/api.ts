@@ -1,6 +1,7 @@
 import fs from "fs";
 import { join } from "path";
 import matter from "gray-matter";
+import { serialize } from "next-mdx-remote/serialize";
 
 const postsDirectory = join(process.cwd(), "_posts");
 
@@ -8,9 +9,19 @@ export function getPostSlugs() {
   return fs.readdirSync(postsDirectory);
 }
 
+export async function getPostBySlugMDX(slug: string, fields: string[] = []) {
+  const realSlug = slug.replace(/\.mdx$/, "");
+  const fullPath = join(postsDirectory, `${realSlug}.mdx`);
+  const fileContents = fs.readFileSync(fullPath, "utf8");
+
+  const mdxSource = await serialize(fileContents, { parseFrontmatter: true });
+
+  return mdxSource;
+}
+
 export function getPostBySlug(slug: string, fields: string[] = []) {
-  const realSlug = slug.replace(/\.md$/, "");
-  const fullPath = join(postsDirectory, `${realSlug}.md`);
+  const realSlug = slug.replace(/\.mdx$/, "");
+  const fullPath = join(postsDirectory, `${realSlug}.mdx`);
   const fileContents = fs.readFileSync(fullPath, "utf8");
   const { data, content } = matter(fileContents);
 
