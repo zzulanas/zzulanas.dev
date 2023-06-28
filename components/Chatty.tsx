@@ -63,7 +63,7 @@ export default function Chatty(props: ChatProps) {
     "What does Zach do?",
     "Where does Zach live?",
     "What does Zach do for fun?",
-    "How did Zach build this site?",
+    "Who are you?",
   ];
 
   return (

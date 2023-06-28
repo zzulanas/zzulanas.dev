@@ -1,4 +1,4 @@
-import { Crimson_Pro, Martel_Sans, Palanquin_Dark } from "next/font/google";
+import { Crimson_Pro, Martel_Sans, Palanquin } from "next/font/google";
 
 export const crimsonPro = Crimson_Pro({
   variable: "--font-crimson-pro",
@@ -12,8 +12,8 @@ export const martelSans = Martel_Sans({
   display: "swap",
 });
 
-export const palanquinDark = Palanquin_Dark({
-  weight: "400",
+export const palanquinDark = Palanquin({
+  weight: ["100", "200", "400", "500", "600", "700"],
   subsets: ["latin"],
   display: "swap",
 });

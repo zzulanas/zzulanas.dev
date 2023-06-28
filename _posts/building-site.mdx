@@ -1,0 +1,350 @@
+---
+title: "Giving a Chatbot all my personal info"
+date: "2023-06-27"
+tags: ["vector embeddings", "nextjs", "vercel", "ai"]
+---
+
+They say it's not a good idea to give out your personal information online, yet here we are!
+
+In building my new website I was interested in the possibility of integrating LLMs like OpenAI's ChatGPT along with Vector Embdeddings to enhance the experience of using one of these bots.
+
+I had seen [Greg Richardson's](https://twitter.com/ggrdson) video on [ClippyGPT](https://www.youtube.com/watch?v=Yhtjd7yGGGA) and extending the Supabase docs to have an AI assistant embedded within, and I thought it was a neat idea, and aimed to try it myself.
+
+Originally I was trying to go about it for work, but I couldn't really find a good use case, so I decided to feed it a ton of info about me and be my assistant while I'm not here to answer live questions on the website
+
+Since the video was using Supabase, I followed along and sort of improvised from the resources scattered around the Supabase docs.
+
+Follow along with me to see how you can give up all your sensitive data to a robot 🤖!
+
+## Goodbye privacy!
+
+Initially, I was trying to use the OpenAI API on its own after following [this guide](https://supabase.com/blog/openai-embeddings-postgres-vector#generating-embeddings) from Greg himself.
+
+While it gave me a good idea of how everything work, luckily Vercel had just released their [AI SDK](https://vercel.com/blog/introducing-the-vercel-ai-sdk) and it made things 1000x easier to implement the streaming for the bot.
+
+To get started with it, you can run
+
+```bash
+npm install ai
+```
+
+in your Next.js project
+
+They have a great getting started guide in the [AI SDK Docs](https://sdk.vercel.ai/docs), so if you wanna start from there I'd reccomend that.
+
+After getting that set up for the basic streaming just to get the Open AI API hooked up to my app, lets move on to Vector Embeddings.
+
+## Vector Embeddings
+
+What is a vector embedding you may ask? Vector embeddings are a cruicial concept in NLP (Natural Language Processing) that allow us to represent words as vectors in a vector space.
+
+<CustomImage
+  supabaseFile={"vector-embeddings"}
+  alt={"Image showing visualization of vector embeddings"}
+/>
+
+Without getting too deep into it (also because I don't fully understand the math behind them), they represent text, images, or any other piece of data as a set of data points that represent how "similar" things are in a vector space.
+
+Like in the example above, the word embeddings for "cat" and "kitten" are represented as close together in vector space, where "dog" is farther away.
+
+With this rudimentary knowledge of how these work, what we're basically going to do is create a database filled with context about me (or you in this case), so when a user asks a question to our chatbot, we can supply it with relevant context.
+
+The steps for the process is like so:
+
+1. Pre-generate embeddings of data (personal information and anecdotes) ahead of time and store it in a DB
+2. When user asks a question to our Chatbot, generate embedding of that question.
+3. Do a similarity search in our DB to compare the vector embeddings of our question and any relevant context, if we find similar results above a certain threshold, return to the chatbot.
+4. Do some prompt engineering behind the scenes to inject the context into chat without interfering with the conversation flow.
+5. Profit! 🤑
+
+## Supabase & pgvector
+
+(big credit to Greg for this section, I'm basically just copying his blog post, so if you need more info, check it out [here](https://supabase.com/blog/openai-embeddings-postgres-vector))
+
+To get started with this, we're going to need a database to store our embeddings in. I'm going to be using Supabase for this, but you can use any Postgres database you want. You can also try out other Vector DB's like [Pinecone](https://www.pinecone.io/) or [Chroma](https://www.trychroma.com/)
+I'm going to be using Supabase because it's free and I'm cheap.
+
+Before we create any tables, we need to install the `pgvector` extension to our database. This is what will allow us to store our vector embeddings in our DB.
+
+You can run a SQL query to install the extension like so:
+
+```sql
+create extension vector;
+```
+
+Now we're going to make a table called `documents` with columns for `id`, `content`, and `embedding`,
+
+```sql
+create table documents (
+  id bigserial primary key,
+  content text,
+  embedding vector(1536)
+);
+```
+
+- The `embedding` column is where we're going to store our vector embeddings. The size of the vector determines the size of the vector space, and the larger the vector space, the more accurate the embeddings will be. I'm using a vector size of 1536 because that's what OpenAI recommends for their API.
+- The `content` column is where we're going to store our context.
+
+Let's now create a function to do a similarity search on the embeddings in our DB.
+
+```sql
+create or replace function match_documents (
+  query_embedding vector(1536),
+  match_threshold float,
+  match_count int
+)
+returns table (
+  id bigint,
+  content text,
+  similarity float
+)
+language sql stable
+as $$
+  select
+    documents.id,
+    documents.content,
+    1 - (documents.embedding <=> query_embedding) as similarity
+  from documents
+  where 1 - (documents.embedding <=> query_embedding) > match_threshold
+  order by similarity desc
+  limit match_count;
+$$;
+```
+
+Now in our Next.js project, let's create a supabase client to connect to our DB.
+
+```ts
+import { createClient } from "@supabase/supabase-js";
+
+export const supabaseClient = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_KEY
+);
+```
+
+Basically this function will take in a query embedding, a match threshold, and a match count, and return the most similar embeddings in our DB.
+
+In order to use our function, we can statically generate the embeddings in a script and insert them into our DB.
+
+```ts filename="app/api/chat/route.ts" showLineNumbers
+import { Configuration, OpenAIApi } from "openai";
+import { supabaseClient } from "@lib/supabase-client";
+
+const configuration = new Configuration({ apiKey: process.env.OPENAI_KEY });
+const openAi = new OpenAIApi(configuration);
+
+const documents = [
+  "zach is a software engineer",
+  "zach likes to rock climb",
+  "zach works at NBCU",
+  ...
+];
+
+async function generateEmbeddings(documents: string[]) {
+  // Assuming each document is a string, you can change these to be something different like a blog post or something
+  for (const document of documents) {
+    // OpenAI recommends replacing newlines with spaces for best results, so we sanitize it here
+    const input = document.replace(/\n/g, " ");
+
+    // Make a call to the OpenAI API to generate the embedding
+    const embeddingResponse = await openAi.createEmbedding({
+      model: "text-embedding-ada-002",
+      input,
+    });
+
+    // This is the vector embedding for our document
+    const [{ embedding }] = embeddingResponse.data.data;
+
+    // Insert the document and embedding into our DB
+    await supabaseClient.from("documents").insert({
+      content: document,
+      embedding,
+    });
+  }
+}
+
+generateEmbeddings(documents);
+
+```
+
+If you replace the strings in the documents array with something of your own, you should see in the DB that the embeddings have been generated and inserted after you run the script.
+
+Now we have a DB full of embeddings, we can move on to the next step.
+
+## Context and prompting
+
+Going back to where we started, let's look at using the Vercel AI SDK to get our chatbot up and running.
+
+I'm going to build off of [this example](https://sdk.vercel.ai/docs/guides/openai#guide-chat-bot) from the [AI SDK Docs](https://sdk.vercel.ai/docs) to get started, so before you continue, I'd recommend setting that up.
+
+Now that we have our chatbot up and running, we can start to add some context to it.
+
+In our `app/api/chat/route.ts` file, lets add some helper functions to get our context from our DB.
+
+```ts
+import { Configuration, OpenAIApi } from "openai-edge";
+import { OpenAIStream, StreamingTextResponse } from "ai";
+import { supabaseClient } from "@lib/supabase-client";
+
+async function getContext(message: string, supabaseClient: SupabaseClient) {
+  // Embed the question using the OpenAI API
+  const embeddingResponse = await openai.createEmbedding({
+    model: "text-embedding-ada-002",
+    input: message.replaceAll("\n", " "),
+  });
+
+  // Error Handling
+  if (embeddingResponse.status !== 200) {
+    throw new ApplicationError(
+      "Failed to create embedding for question",
+      embeddingResponse
+    );
+  }
+
+  // Get the embedding from the response
+  const {
+    data: [{ embedding }],
+  }: CreateEmbeddingResponse = await embeddingResponse.json();
+
+  // Run our `match_documents` function from earlier on the question embedding to get relevant context
+  const { error: matchError, data: documents } = await supabaseClient.rpc(
+    "match_documents",
+    {
+      query_embedding: embedding,
+      match_threshold: 0.7,
+      match_count: 10,
+    }
+  );
+
+  if (matchError) {
+    throw new ApplicationError("Failed to match documents", matchError);
+  }
+
+  const tokenizer = new GPT3Tokenizer({ type: "gpt3" });
+  let tokenCount = 0;
+  let contextText = "";
+
+  // Loop through all the context documents and add them to our context text
+  // We tokenize the input to split the context into chunks of 1500 tokens in case it's too long
+  for (const document of documents) {
+    const content = document.content;
+    const encoded = tokenizer.encode(content);
+    tokenCount += encoded.text.length;
+
+    if (tokenCount >= 1500) {
+      break;
+    }
+
+    contextText += `${content.trim()}\n---\n`;
+  }
+
+  return contextText;
+}
+
+// Create an OpenAI API client (that's edge friendly!)
+const config = new Configuration({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+const openai = new OpenAIApi(config);
+
+// IMPORTANT! Set the runtime to edge
+export const runtime = "edge";
+
+export async function POST(req: Request) {
+  // Extract the `messages` from the body of the request
+  const { messages } = await req.json();
+
+  // Extract the last message from the user, this is the question they asked
+  const currMessage = messages[messages.length - 1].content;
+
+  // Generate the context text from our helper function
+  let contextText = await getContext(currMessage, supabaseClient);
+
+  // Get conversation without our prompted context
+  const contextMessages: ChatCompletionRequestMessage[] = messages.map(
+    // @ts-ignore
+    ({ role, content }) => {
+      if (
+        ![
+          ChatCompletionRequestMessageRoleEnum.User,
+          ChatCompletionRequestMessageRoleEnum.Assistant,
+        ].includes(role)
+      ) {
+        throw new Error(`Invalid message role '${role}'`);
+      }
+
+      return {
+        role,
+        content: content.trim(),
+      };
+    }
+  );
+
+  // Create a prompt to inject the context into the chat
+  const initPrompt = `you are a helpful chatbot embedded into Zach Zulanas' website to help answer questions about him. here is relevant context about him: \n---\n ${contextText}\n---\n`;
+  const initMessage: ChatCompletionRequestMessage = {
+    role: ChatCompletionRequestMessageRoleEnum.System,
+    content: initPrompt,
+  };
+
+  // Combine the context messages with the prompt
+  const totalMessages = [initMessage, ...contextMessages];
+
+  // Ask OpenAI for a streaming chat completion given the prompt
+  const response = await openai.createChatCompletion({
+    model: "gpt-3.5-turbo",
+    stream: true,
+    messages: totalMessages,
+    temperature: 0.8, // This can be changed however you want, I found 0.8 to be a good balance to keep the bots responses similar
+  });
+  // Convert the response into a friendly text-stream
+  const stream = OpenAIStream(response);
+  // Respond with the stream
+  return new StreamingTextResponse(stream);
+}
+```
+
+Your `app/page.tsx` should look something like this:
+
+```tsx
+"use client";
+
+import { useChat } from "ai/react";
+
+export default function Chat() {
+  const { messages, input, handleInputChange, handleSubmit } = useChat();
+
+  return (
+    <div className="mx-auto w-full max-w-md py-24 flex flex-col stretch">
+      {messages.map((m) => (
+        <div key={m.id}>
+          {m.role === "user" ? "User: " : "AI: "}
+          {m.content}
+        </div>
+      ))}
+
+      <form onSubmit={handleSubmit}>
+        <label>
+          Say something...
+          <input
+            className="fixed w-full max-w-md bottom-0 border border-gray-300 rounded mb-8 shadow-xl p-2"
+            value={input}
+            onChange={handleInputChange}
+          />
+        </label>
+        <button type="submit">Send</button>
+      </form>
+    </div>
+  );
+}
+```
+
+You should now be able to ask your chatbot questions and it should be able to give you an answer based on the context you stored in your DB!
+
+This functionality is pretty basic, but it's a good starting point to build off of. You can add more context to your DB, or even add more context to the prompt to make the chatbot more conversational.
+
+Supabase also has a [GitHub actions workflow](https://github.com/supabase/embeddings-generator) to generate embeddings from Markdown files in your repo.
+
+## Conclusion
+
+I hope you enjoyed this post and learned something new about vector embeddings and how to use them to enhance your chatbots! I'm excited to see what other use cases I can find for this technology, especially once the Vercel AI SDK [supports function calls](https://github.com/vercel-labs/ai/pull/178)
