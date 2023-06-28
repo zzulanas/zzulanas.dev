@@ -28,9 +28,9 @@ const projects: ProjectData[] = [
 const ProjectsPage: React.FC = () => {
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-8">Projects</h1>
+      <h1 className="text-3xl font-bold mb-8 ml-4 md:ml-0">Projects</h1>
 
-      <section className="flex flex-wrap -m-4">
+      <section className="flex flex-wrap">
         {projects.map((project, index) => (
           <Project key={index} project={project} />
         ))}
