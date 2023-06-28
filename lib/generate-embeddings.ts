@@ -26,6 +26,14 @@ const documents = [
   "zach's favorite color is a nice blue green tealish color",
   "zach's favorite food is Japanese Curry",
   "zach's top music artist is probably Steve Lacy",
+  "zach's favorite movie is Spiderman Across the Spiderverse",
+  "zach's favorite TV show is Avatar the Last Airbender",
+  "zach built this website using Next.js and Tailwind CSS",
+  "zach used Supabase and Vector Embeddings with OpenAI to build this website",
+  "zach's favorite video game bounces between Civ 6 and Rocket League",
+  "zach is a big fan of the NBA, his favorite team is the Sacramento Kings",
+  "zach's favorite animal is the capybara",
+  "at NBCUniversal Zach works on a team that is building a digital rights distribution platform",
 ];
 
 async function generateEmbeddings(documents: string[]) {

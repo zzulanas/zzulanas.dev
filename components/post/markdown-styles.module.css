@@ -35,6 +35,10 @@
   @apply text-2xl mt-8 mb-4 leading-snug;
 }
 
-.markdown code {
+.markdown pre {
   @apply text-sm font-mono bg-gray-800 rounded px-1;
+}
+
+.markdown p code {
+  @apply text-sm font-mono bg-gray-100 rounded px-1;
 }

@@ -83,6 +83,7 @@ export default function Nav() {
             <Link
               href="/about"
               className="group text-sky-600 transition duration-100"
+              onClick={() => setOpen(!isOpen)}
             >
               <AnimatedText
                 title="about"
@@ -95,6 +96,7 @@ export default function Nav() {
             <Link
               href="/projects"
               className="group text-sky-600 transition duration-100"
+              onClick={() => setOpen(!isOpen)}
             >
               <AnimatedText
                 title="projects"
@@ -107,6 +109,7 @@ export default function Nav() {
             <Link
               href="/blog"
               className="group text-sky-600 transition duration-100"
+              onClick={() => setOpen(!isOpen)}
             >
               <AnimatedText
                 title="blog"

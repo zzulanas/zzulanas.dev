@@ -16,10 +16,10 @@ export default function Home() {
   // TODO: look into Drag Controls, try and mimic gravity when hovering over title text
   return (
     <div
-      className="flex flex-col md:flex-row min-h-screen md:min-h-0 items-center h-full"
+      className="flex flex-grow flex-col md:flex-row md:min-h-0 items-center"
       ref={constraintsRef}
     >
-      <div className="basis-1/3 mb-10 md:mb-0 px-3 md:px-10">
+      <div className="md:basis-1/3 mb-10 md:mb-0 px-3 md:px-10">
         <h1 className="text-8xl">
           {!dragEnabled && <AnimatedText title={name} />}
           {dragEnabled && (
@@ -50,7 +50,7 @@ export default function Home() {
           </h2>
         )}
       </div>
-      <div className="basis-2/3 flex items-stretch grow w-full h-full">
+      <div className="md:basis-2/3 flex items-stretch grow w-full h-full">
         <Chatty dragEnabled={dragEnabled} />
       </div>
     </div>
