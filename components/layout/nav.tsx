@@ -24,7 +24,6 @@ export default function Nav() {
   };
   const pathname = usePathname();
   const [isOpen, setOpen] = useState(false);
-  const router = useRouter();
   const isAboutSelected = pathname === "/about";
   const isProjectsSelected = pathname === "/projects";
   const isBlogSelected = pathname === "/blog";

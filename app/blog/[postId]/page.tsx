@@ -50,7 +50,7 @@ export default async function Post({ params: { postId } }: Props) {
 
   return (
     <>
-      <div className="md:max-w-screen-lg md:px-40 px-2">
+      <div className="md:max-w-screen-lg  md:self-center md:px-40 px-4">
         <h2 className={cx("text-5xl mt-4 mb-0", palanquinDark.className)}>
           {meta.title}
         </h2>
