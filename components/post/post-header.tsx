@@ -14,7 +14,7 @@ const PostHeader = ({ title, coverImage, date }: Props) => {
       <PostTitle>{title}</PostTitle>
       {coverImage && (
         <div className="mb-8 md:mb-16 sm:mx-0">
-          <CoverImage title={title} src={coverImage} />
+          <CoverImage title={title} supabaseFile={coverImage} />
         </div>
       )}
       <div className="max-w-2xl mx-auto">
