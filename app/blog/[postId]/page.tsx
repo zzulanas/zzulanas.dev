@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import "highlight.js/styles/github-dark.css";
 import styles from "@/components/post/markdown-styles.module.css";
+import cx from "classnames";
+import { crimsonPro, martelSans, palanquinDark } from "@/app/fonts";
 
 export const revalidate = 86400;
 
@@ -15,6 +17,7 @@ type Props = {
 
 export async function generateStaticParams() {
   const posts = await getPostsMeta();
+  console.log(posts);
 
   if (!posts) return [];
 
@@ -33,13 +36,12 @@ export async function generateMetadata({ params: { postId } }: Props) {
   }
 
   return {
-    title: post.meta.title,
+    title: `${post.meta.title} | zzulanas`,
   };
 }
 
 export default async function Post({ params: { postId } }: Props) {
   const post = await getPostByName(`${postId}.mdx`);
-  console.log(post);
 
   if (!post) notFound();
 
@@ -49,9 +51,11 @@ export default async function Post({ params: { postId } }: Props) {
 
   return (
     <>
-      <div>
-        <h2 className="text-3xl mt-4 mb-0">{meta.title}</h2>
-        <p className="mt-0 text-sm">{pubDate}</p>
+      <div className="mx-auto max-w-screen-lg">
+        <h2 className={cx("text-5xl mt-4 mb-0", palanquinDark.className)}>
+          {meta.title}
+        </h2>
+        <p className={cx("mt-2 text-md", martelSans.className)}>{pubDate}</p>
         <article className={styles["markdown"]}>{content}</article>
         <p className="mb-10">
           <Link href="/blog">← Back to home</Link>

@@ -9,6 +9,18 @@
   @apply my-6;
 }
 
+.markdown li {
+  @apply my-2;
+}
+
+.markdown a {
+  @apply text-blue-steel-400;
+}
+
+.markdown a:hover {
+  @apply text-blue-steel-500 underline;
+}
+
 .markdown h2 {
   @apply text-3xl mt-12 mb-4 leading-snug;
 }

@@ -1,34 +1,58 @@
 ---
-title: "This is my New Article"
-date: "2023-04-18"
+title: "Giving a chatbot my personal info"
+date: "2023-06-27"
 tags: ["next.js", "nextjs", "new"]
 ---
 
-We recommend using **Static Generation** (with and without data) whenever possible because your page can be built once and served by CDN, which makes it much faster than having a server render the page on every request.
+They say it's not a good idea to give out your personal information online, yet here we are!
 
-### Testing 123
+In building my new website I was interested in the possibility of integrating LLMs like OpenAI's ChatGPT along with Vector Embdeddings to enhance the experience of using one of these bots.
 
-## Testing 123
+I had seen [Greg Richardson's](https://twitter.com/ggrdson) video on [ClippyGPT](https://www.youtube.com/watch?v=Yhtjd7yGGGA) and extending the Supabase docs to have an AI assistant embedded within, and I thought it was a neat idea, and aimed to try it myself.
 
-# Testing 123
+Originally I was trying to go about it for work, but I couldn't really find a good use case, so I decided to feed it a ton of info about me and be my assistant while I'm not here to answer live questions on the website
 
-```ts
-const sum = (num1: number, num2: number): number => {
-  return num1 + num2;
-};
+Since the video was using Supabase, I followed along and sort of improvised from the resources scattered around the Supabase docs.
 
-console.log(sum(4, 8)); //12
+Follow along with me to see how you can give up all your sensitive data to a robot 🤖!
+
+## Goodbye privacy!
+
+Initially, I was trying to use the OpenAI API on its own after following [this guide](https://supabase.com/blog/openai-embeddings-postgres-vector#generating-embeddings) from Greg himself.
+
+While it gave me a good idea of how everything work, luckily Vercel had just released their [AI SDK](https://vercel.com/blog/introducing-the-vercel-ai-sdk) and it made things 1000x easier to implement the streaming for the bot.
+
+To get started with it, you can run
+
+```bash
+npm install ai
 ```
 
-You can use Static Generation for many types of pages, including:
+in your Next.js project
 
-- Marketing pages
-- Blog posts
-- E-commerce product listings
-- Help and documentation
+They have a great getting started guide in the [AI SDK Docs](https://sdk.vercel.ai/docs), so if you wanna start from there I'd reccomend that.
 
-You should ask yourself: "Can I pre-render this page **ahead** of a user's request?" If the answer is yes, then you should choose Static Generation.
+After getting that set up for the basic streaming just to get the Open AI API hooked up to my app, lets move on to Vector Embeddings.
 
-On the other hand, Static Generation is **not** a good idea if you cannot pre-render a page ahead of a user's request. Maybe your page shows frequently updated data, and the page content changes on every request.
+## Vector Embeddings
 
-In that case, you can use **Server-Side Rendering**. It will be slower, but the pre-rendered page will always be up-to-date. Or you can skip pre-rendering and use client-side JavaScript to populate data.
+What is a vector embedding you may ask? Vector embeddings are a cruicial concept in NLP (Natural Language Processing) that allow us to represent words as vectors in a vector space.
+
+<CustomImage
+  supabaseFile={"vector-embeddings"}
+  alt={"Image showing visualization of vector embeddings"}
+/>
+
+Without getting too deep into it (also because I don't fully understand the math behind them), they represent text, images, or any other piece of data as a set of data points that represent how "similar" things are in a vector space.
+
+Like in the example above, the word embeddings for "cat" and "kitten" are represented as close together in vector space, where "dog" is farther away.
+
+With this rudimentary knowledge of how these work, what we're basically going to do is create a database filled with context about me (or you in this case), so when a user asks a question to our chatbot, we can supply it with relevant context.
+
+The steps for the process is like so:
+
+1. Pre-generate embeddings of data (personal information and anecdotes) ahead of time and store it in a DB
+2. When user asks a question to our Chatbot, generate embedding of that question.
+3. Do a similarity search in our DB to compare the vector embeddings of our question and any relevant context, if we find similar results above a certain threshold, return to the chatbot.
+4. Do some prompt engineering behind the scenes to inject the context into chat without interfering with the conversation flow.
+5. Profit! 🤑

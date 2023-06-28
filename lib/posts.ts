@@ -77,7 +77,6 @@ export async function getPostsMeta(): Promise<Meta[] | undefined> {
       console.log(err);
       return;
     }
-    console.log(files);
     fileArr = files.filter((file) => file.endsWith(".mdx"));
   });
 
@@ -86,7 +85,6 @@ export async function getPostsMeta(): Promise<Meta[] | undefined> {
       fileArr.push(file);
     }
   });
-  console.log(fileArr);
 
   const posts: Meta[] = [];
 
