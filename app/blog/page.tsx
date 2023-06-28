@@ -4,7 +4,11 @@ import { getAllPosts } from "@/lib/api";
 
 export default async function Blog() {
   const allPosts: PostType[] = await getPosts();
-  return <MoreStories posts={allPosts} />;
+  return (
+    <div className="justify-center">
+      <MoreStories posts={allPosts} />
+    </div>
+  );
 }
 
 async function getPosts(): Promise<PostType[]> {

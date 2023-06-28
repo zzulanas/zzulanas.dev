@@ -17,7 +17,6 @@ type Props = {
 
 export async function generateStaticParams() {
   const posts = await getPostsMeta();
-  console.log(posts);
 
   if (!posts) return [];
 
@@ -36,7 +35,7 @@ export async function generateMetadata({ params: { postId } }: Props) {
   }
 
   return {
-    title: `${post.meta.title} | zzulanas`,
+    title: `${post.meta.title} | zzulanas.dev`,
   };
 }
 
@@ -58,7 +57,7 @@ export default async function Post({ params: { postId } }: Props) {
         <p className={cx("mt-2 text-md", martelSans.className)}>{pubDate}</p>
         <article className={styles["markdown"]}>{content}</article>
         <p className="mb-10">
-          <Link href="/blog">← Back to home</Link>
+          <Link href="/blog">← back to blogs</Link>
         </p>
       </div>
     </>

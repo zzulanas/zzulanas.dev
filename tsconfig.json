@@ -30,5 +30,8 @@
     ".next/types/**/*.ts",
     "lib/generate-embeddings.js"
   ],
-  "exclude": ["node_modules", "supabase"]
+  "exclude": ["node_modules", "supabase"],
+  "mdx": {
+    "plugins": [["remark-frontmatter", ["toml", "yaml"]], "remark-gfm"]
+  }
 }

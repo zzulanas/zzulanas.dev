@@ -1,17 +1,22 @@
 import cn from "classnames";
 import Link from "next/link";
 import Image from "next/image";
+import { supabaseClient } from "@/lib/supabase-client";
 
 type Props = {
   title: string;
-  src: string;
+  supabaseFile: string;
   slug?: string;
 };
 
-const CoverImage = ({ title, src, slug }: Props) => {
+const CoverImage = ({ title, supabaseFile, slug }: Props) => {
+  const { data: src } = supabaseClient.storage
+    .from("blog-images")
+    .getPublicUrl(supabaseFile);
+
   const image = (
     <Image
-      src={src}
+      src={src.publicUrl}
       alt={`Cover Image for ${title}`}
       className={cn("shadow-sm w-full", {
         "hover:shadow-lg transition-shadow duration-200": slug,

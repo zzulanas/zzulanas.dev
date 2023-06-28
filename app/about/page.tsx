@@ -6,7 +6,7 @@ import profilePic from "public/IMG_5891.jpg";
 
 export default function About() {
   return (
-    <div className="flex flex-col justify-center items-start mx-40">
+    <div className="flex flex-col justify-center items-start mx-2 md:mx-40">
       <div className="flex flex-row items-center justify-between">
         <div className="p-2 rounded-full backdrop-blur-lg shadow-md bg-gradient-to-br from-orange-400 via-fuschia-400 to-emerald-400">
           <Image

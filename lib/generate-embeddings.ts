@@ -23,6 +23,9 @@ const documents = [
   "zach was president of a consulting club in college",
   "zach was a wildlife docent in Point Reyes National Seashore",
   "zach is experienced in React, TypeScript, Node.js, Python, AWS, and more",
+  "zach's favorite color is a nice blue green tealish color",
+  "zach's favorite food is Japanese Curry",
+  "zach's top music artist is probably Steve Lacy",
 ];
 
 async function generateEmbeddings(documents: string[]) {
