@@ -19,6 +19,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <title>zzulanas.dev</title>
+        <meta property="og:image" content="https://zzulanas.dev/api/og" />
+      </head>
       <body
         className={cx(
           crimsonPro.variable,
