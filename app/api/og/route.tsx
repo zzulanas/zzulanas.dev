@@ -4,7 +4,11 @@ import { ImageResponse } from "next/server";
 
 export const runtime = "edge";
 
-export async function GET() {
+export async function GET(request: Request) {
+  let path = new URL(request.url).pathname;
+  path = path.split("/")[1];
+  if (path === "") path = "zzulanas.dev";
+
   return new ImageResponse(
     (
       <div
@@ -57,7 +61,7 @@ export async function GET() {
               color: "black",
             }}
           >
-            /zzulanas.dev
+            {path}
           </div>
         </div>
         <div
