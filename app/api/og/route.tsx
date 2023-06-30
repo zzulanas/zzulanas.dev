@@ -34,7 +34,6 @@ export async function GET() {
               backgroundImage:
                 "linear-gradient(90deg, rgb(0, 124, 240), rgb(0, 223, 216))",
               backgroundClip: "text",
-              "-webkit-background-clip": "text",
               color: "rgba(241,146,60,1)",
             }}
           >
@@ -45,7 +44,6 @@ export async function GET() {
               backgroundImage:
                 "linear-gradient(90deg, rgb(121, 40, 202), rgb(255, 0, 128))",
               backgroundClip: "text",
-              "-webkit-background-clip": "text",
               color: "transparent",
             }}
           >
@@ -56,7 +54,6 @@ export async function GET() {
               backgroundImage:
                 "linear-gradient(90deg, rgb(255, 77, 77), rgb(249, 203, 40))",
               backgroundClip: "text",
-              "-webkit-background-clip": "text",
               color: "black",
             }}
           >
