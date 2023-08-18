@@ -9,7 +9,7 @@ import Footer from "@/components/layout/footer";
 
 export const metadata = {
   title: "zachary zulanas",
-  description: "web developer based in NYC",
+  description: "software engineer",
 };
 
 export default function RootLayout({
