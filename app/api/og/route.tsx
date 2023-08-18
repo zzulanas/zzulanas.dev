@@ -7,7 +7,7 @@ export const runtime = "edge";
 export async function GET(request: Request) {
   let path = new URL(request.url).pathname;
   path = path.split("/")[1];
-  if (path === "") path = "zzulanas.dev";
+  if (path === "" || path === "api") path = "zzulanas.dev";
 
   return new ImageResponse(
     (
