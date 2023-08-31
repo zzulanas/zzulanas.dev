@@ -1,0 +1,230 @@
+---
+title: "How a Sprained Ankle Led Me to AWS Certification"
+date: "2023-08-31"
+tags: ["aws solutions architect", "exam", "how to", "bezos"]
+---
+
+# When Life Gives You Sprains, Make AWS Lemonade
+
+Before working at NBC I had never touched AWS, now my days are filled with it. I use RDS and Lambda on a daily basis, and wanted to learn more about AWS services. My work actually had an AWS lecturer give a 3 day intensive course that went over everything you needed to know for the Solutions Architect exam. It seemed like a lot, and I wasn't really thinking of taking the exam, but the course helped me understand a lot more of the services available in AWS.
+
+A couple days after the course, I feel while I was rock climbing (indoors!) and got a nasty ankle sprain. The doctor told me to stay off of it for about a month. Doomed to stay inside for a month, I said what the heck, I'll study for the exam. I bought a course from Adrian Cantrill and started studying. It took me around 3 weeks to go through his course and another week of just taking practice exams to feel ready for the exam, and I passed on my first try! Big shoutout to Adrian Cantrill, Tutorials Dojo, and the `/r/AWSCertifications` subreddit for helping me pass the exam.
+
+In this post I'm going to go over the most crucial services you should know for the exam, the resources I used, and tips I have for taking the exam.
+
+## Building My AWS Arsenal: Resources and Study Materials
+
+While the course I took through work was great, it was a lot of information to digest in a 3 day period. I did some looking around online and found the `/r/AWSCertifications` subreddit which suggested the combo of Adrian Cantrill's SAA-C03 course and the Tutorials Dojo practice exams. I bought both and started studying.
+
+I've heard good things about other courses like Stephen Maarek's, but Adrian's course was well put together and taught me about more than just what I needed to pass the exam. There were some topics I wasn't fully prepare for from what he taught though, I'll note those later.
+
+The Tutorials Dojo practice exams were great. They were harder than the actual exam, but they helped me understand what I needed to study more. The practice exams are really where all your knowledge will be tested, so I highly recommend taking them in combo with whatever course you take. I scored around 65-80% on the practice exams, and I scored an 836 on the actual exam. You only ned a 720 to pass, so don't worry if you're not scoring 90%+ on the practice exams, but you should go through every single question and understand why you got it wrong/right.
+
+The biggest help to me while I was going through Adrian's course was to TAKE NOTES!!!! Take as MANY notes as you can while he's talking. I went through the course at 1.5x speed (2x for some parts) and I tried to take a lot of detailed notes with screenshots from his lectures. It made me feel like I was back in college again haha, but it REALLY helped me retain the info. To be honest I don't think I would've passed the exam without taking notes. My notes also helped a lot when I took the practice exams and had a textual reference to go back to.
+
+## The A, B, Cs of AWS: Key Services to Master
+
+There are a lot of services in AWS, and you don't need to know all of them for the exam, but you definitely need to know a lot. I'm going to go over the services I think are the most important to know for the exam, and the ones I was tested on the most.
+
+### EC2
+
+EC2 is the bread and butter of AWS. It's the service that allows you to create virtual machines in the cloud. You can create EC2 instances with different operating systems, different hardware, and different storage options. You can also create your own AMIs (Amazon Machine Images) to use for your EC2 instances. EC2 instances can be used for a lot of different things, but the most common use case is to host a web server.
+
+I personally hadn't used EC2 until Adrian's demo lessons, I've mostly got experience in true serverless architectures, but EC2 is a great service to know about.
+
+For the exam you should know how to:
+
+- create an EC2 instance
+- how to create an AMI/what an AMI does
+- Difference between EBS and Instance Store (VERY IMPORTANT ON EXAM)
+- EBS Volume types (cost efficiency was big on this one)
+- EBS Backups
+- EC2 instance types
+- EC2 instance purchasing options (this one was surprisingly very common on the exam)
+- Encryption (this is huge across the exam, make sure to understand encryption in transit and at rest, and the differences between them in EC2 and other services)
+
+### S3
+
+S3 is one of the most popular services in AWS. Home Depot buckets in the cloud! S3 showed up on about 30% of the questions I was asked, so it is CRUCIAL you understand how it works and how it can tie into other AWS services.
+
+For the exam you should know how to:
+
+- Create an S3 bucket
+- S3 bucket permissions (ACLs and Bucket Policies)
+- S3 encryption (encryption in transit and at rest)
+- S3 storage classes (this was a big one on the exam, know the differences between the storage classes and when to use them)
+- S3 versioning & Lifecycle policies (Lifecycle policies were on at least 5 questions)
+- S3 Cross Region Replication (CRR)
+- S3 Transfer Acceleration (small one but important to know)
+- S3 Object Lock (this was really important actually, quite a few scenarios popped up relating to this)
+- S3 Gateway Endpoint (this was on 2-3 questions, know what it is and how it works)
+
+## VPC & Networking
+
+God I HATE networking. I took a networking class in college and dropped it after a week (not my jam). Taking Adrian's course definitely changed my mind on it, but I didn't have much of a networking background going into this exam, and I'm not sure how much VPC knowledge will play into my day to day work. That being said, VPC and networking is a HUGE part of the exam. I'd say about 25-35% of the questions I was asked were related to VPC and networking.
+
+For the exam you should know how to:
+
+- Create a VPC and what a VPC is
+- Create a subnet (difference between private and public subnets too)
+- Create a NAT Gateway
+- Create a VPC Endpoint and what it is
+- VPC Peering connections and firewalls
+- VPC Flow Logs
+- VPC Security Groups (this is MASSIVE, know how they work and how they differ from NACLs)
+- VPC NACLs (this is also MASSIVE, know how they work and how they differ from Security Groups)
+- Understand IP Addresses and subnets! Good networking knowledge is crucial for this topic.
+- Internet Gateways (IGWs)
+- Route Tables
+
+I wanna reiterate how important VPC and networking knowledge is for the exam. AWS is built around VPCs and these should be a big part of your studying. Especially if you're planning to actually use AWS in your day to day work.
+
+### IAM & Organizations
+
+Oh IAM my old friend. Like VPC, IAM is extremely important for the exam and understanding how to organize your AWS accounts. I'd say about 20-30% of the questions I was asked were related to IAM and Organizations.
+
+IAM is the way you manage access to your AWS resources. You can create users, groups, and roles to manage access to your resources. You can also create policies to manage access to your resources. IAM is a HUGE part of the exam, and you should know it inside and out.
+
+I wasn't super familiar with it before the exam since it's managed a lot more at a company-wide scale vs just my team, but I'm glad I learned it.
+
+For the exam you should know:
+
+- IAM Users, Groups, and Roles
+- IAM Policies (this is HUGE, know how to create them and what they do, also know how to read them, I got asked a few questions where I had to read a policy and determine what it did)
+- IAM Access Keys
+- IAM Password Policies
+- Service Control POlicies (SCPs)
+- IAM Federation (this was on 2-3 questions, know what it is and how it works)
+- IAM Cross Account Access
+- AWS Control Tower and AWS Organizations, just the basics really for these two
+
+### RDS & Databases
+
+The engine that runs your data, literally! RDS (Relational Database Service) is a critical service to know for the exam.
+
+For the exam, you should know:
+
+- Different database engines available in RDS
+- Multi-AZ deployments vs Read Replicas
+- Backup and restoration strategies
+- Encryption options
+- Database scaling options
+
+### DynamoDB
+
+The NoSQL giant in AWS! DynamoDB offers fast and flexible non-relational databases for applications that require consistent, single-digit millisecond latency.
+
+For the exam, you should know:
+
+- Basics of NoSQL vs SQL
+- How to set up DynamoDB tables
+- Primary Keys: Partition Key and Sort Key
+- Global and Local Secondary Indexes
+- DynamoDB Streams
+- Read and Write Capacity Units
+
+### Lambda & Serverless
+
+Hello, auto-scaling compute! Lambda is the epitome of serverless, letting you run code without provisioning servers.
+
+For the exam, you should know:
+
+- Lambda Triggers
+- Cold starts and how to mitigate them
+- Environment variables and encryption
+- IAM roles for Lambda
+- Lambda layers vs Lambda functions
+
+### Route 53 & DNS
+
+I wasn't super familiar with Route 53 and DNS but it's a super important part of the exam. I'd say about 10-15% of the questions I was asked were related to Route 53 and DNS.
+
+For the exam, you should know:
+
+- What DNS is and how it works
+- Route 53 Routing Policies
+- Route 53 Health Checks
+- Route 53 Private Hosted Zones
+- Load balancing with Route 53
+- Route 53 Resolver
+
+### CloudFront
+
+The Content Delivery Network (CDN) of AWS. Knowing CloudFront can significantly boost your exam performance.
+
+For the exam, you should know:
+
+- What a CDN is and why you would use one
+- How to set up a CloudFront distribution
+- Cache behavior and invalidations
+- Origins and Origin Groups
+- Signed URLs and Signed Cookies
+
+### ECS (Elastic Container Service)
+
+Docker in the cloud, simplified! ECS allows you to run, stop, and manage Docker containers on a cluster.
+
+For the exam, you should know:
+
+- What a Docker container is
+- ECS tasks and services
+- Launch Types: EC2 and Fargate
+- ECS Clusters
+- Task Placement Strategies
+
+### SNS, SQS, & Messaging
+
+The postal service of the AWS world. SNS and SQS are crucial for decoupling components.
+
+For the exam, you should know:
+
+- Differences between SNS and SQS
+- Setting up SNS topics and subscriptions
+- SQS Queue types: Standard vs. FIFO
+- Message retention policies
+- Dead Letter Queues (DLQs)
+
+### Machine Learning Services - A Quick Note
+
+While machine learning services like SageMaker, Comprehend, and Rekognition are a growing part of AWS, you don't need to know them in depth for the Solutions Architect exam. Just be aware they exist and have a general idea of what they do.
+
+**This list isn't comprehensive and I've definitely missed some topics, but these are the ones that stood out to me the most on the exam and I think are important to remember.**
+
+## Exam Tips & Studying Advice
+
+I wasn't too rigorous with my studying, I took around a whole month to feel "ready", but I've read about some people taking less than a week and some who took 3-4 months. It really depends on your background and how much time you can dedicate to studying.
+
+I spent around ~2-3 hours a day studying, and I took a few days off here and there. I tried to have a goal of churning through 1 section of Adrian's course a day, but I didn't always hit that goal. I also took a few days off here and there to let my brain rest.
+
+I rescheduled my exam twice because I thought I wasn't ready, but I'm glad I did. I was able to take my time and really feel confident going into the exam. Use the free reschedules!!
+
+The week beforehand I just focused on the TutorialsDojo practice exams and going through my notes. The day before I took it easy and just relaxed. I didn't want to burn myself out before the exam.
+
+If you can, I would highly recommend taking the exam in person. I went to a testing center and it helped me focus a lot more than I would have at home. I also didn't have to worry about my internet going out or my computer crashing.
+
+At the end of the day, find what works for you, but I would recommend taking it easy the day before the exam and not cramming. You'll just stress yourself out and burn yourself out.
+
+One thing I would really take note of in Adrian's course and the TD exams is how the questions are asked. I noticed there's usually two types of questions:
+
+1. What is the BEST solution? Usually these questions will give you a few "wrong" options and its a process of elimination to find the best solution.
+2. What is the MOST cost-effective solution? These questions will give you a few "right" options and you have to pick the most cost-effective one.
+
+The cost-effective/efficient questions are usually the hardest for me, since they give you a few right options, so its a bit harder to choose the correct answer.
+
+## Conclusion
+
+It's been an interesting ride, especially considering I never initially planned on taking this certification exam. But when life threw a sprained ankle at me, I took it as a chance to dive deeper into AWS and come out the other side more knowledgeable and certified!
+
+Certification doesn't mean you know everything there is to know about AWS, but it does show that you have a certain level of understanding and competency. It has made me more confident in my day-to-day work, and has even opened doors for conversations and opportunities within my organization.
+
+Thank you to everyone who has helped along the way, especially Adrian Cantrill, Tutorials Dojo, and the folks over at /r/AWSCertifications. Your resources and advice have been invaluable in this journey.
+
+I wish you all the best in your own AWS certification journeys. Remember, each journey is unique, so don't rush it; take the time you need to truly understand the material. Good luck!
+
+P.S. My ankle's doing much better now, thanks for asking! 😄
+
+### Resources
+
+- [Adrian Cantrill's Solutions Architect Course](https://learn.cantrill.io/p/aws-certified-solutions-architect-associate-saa-c03)
+- [TutorialsDojo Practice Exams](https://portal.tutorialsdojo.com/courses/aws-certified-solutions-architect-associate-practice-exams/)
+- [`/r/AWSCertifications` Subreddit](https://www.reddit.com/r/AWSCertifications/)
