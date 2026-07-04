@@ -97,6 +97,19 @@ export const EXPERIENCE: Experience[] = [
   },
 ];
 
+export const BIO: string[] = [
+  "Zach is a software engineer living in Brooklyn, NY, originally from California. He spends his days building streaming SDKs at Peacock and his nights on side projects that usually involve GPUs, LLMs, or both.",
+  "Five years across full-stack web, AI platforms, and most recently streaming SDK development. He likes owning things end to end — the architecture, the ergonomics, the docs — and shipping fast with small teams.",
+  "Off the keyboard you'll find him rock climbing (mostly indoors, occasionally spraining ankles), taking photos, or poking at whatever new tool caught his attention this week.",
+];
+
+export const EDUCATION = {
+  school: "UC Santa Cruz",
+  degree: "B.S. Computer Science",
+  dates: "2017 — 2021",
+  note: "AWS Solutions Architect Associate certified — a story involving a sprained ankle, told in the writing section.",
+};
+
 export const SOCIAL_LINKS = [
   { label: "github", href: "https://github.com/zzulanas" },
   { label: "linkedin", href: "https://linkedin.com/in/zzulanas" },

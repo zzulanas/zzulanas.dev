@@ -75,6 +75,16 @@ body {
   border: 1px solid var(--line);
 }
 
+/* heavier frosted surface for the terminal window — more opaque + stronger
+   blur so the scrollback stays readable over the shader */
+.glass-frost {
+  background: color-mix(in srgb, var(--bg) 96%, transparent);
+  backdrop-filter: blur(24px) saturate(1.1);
+  -webkit-backdrop-filter: blur(24px) saturate(1.1);
+  border: 1px solid var(--line);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.28);
+}
+
 /* minimal syntax highlighting for rehype-highlight, follows theme */
 .prose pre {
   background: var(--panel);
