@@ -1,80 +1,115 @@
-"use client";
-
+import type { Metadata } from "next";
 import Image from "next/image";
-import profilePic from "public/IMG_5891.jpg";
-// TODO: figure out gradient import
+import { ArrowUpRight } from "lucide-react";
+import { PageShell } from "@/components/page-shell";
+import { EXPERIENCE, SOCIAL_LINKS } from "@/lib/data";
+import profile from "@/public/IMG_5891.jpg";
 
-export default function About() {
+export const metadata: Metadata = {
+  title: "about",
+  description: "About Zachary Zulanas — software engineer in Brooklyn, NY.",
+};
+
+export default function AboutPage() {
   return (
-    <div className="flex flex-col justify-center items-start mx-2 md:mx-40 px-2">
-      <div className="flex flex-row items-center justify-between">
-        <div className="p-2 rounded-full backdrop-blur-lg shadow-md bg-gradient-to-br from-orange-400 via-fuschia-400 to-emerald-400">
-          <Image
-            src={profilePic}
-            width={300}
-            height={300}
-            alt="Picture of Zach"
-            className="rounded-full"
-          />
+    <PageShell kicker="03" title="about">
+      <div className="flex flex-col gap-10 sm:flex-row sm:items-start">
+        <Image
+          src={profile}
+          alt="Zach Zulanas"
+          className="glass w-44 rounded-2xl object-cover sm:w-52"
+          placeholder="blur"
+          priority
+        />
+        <div className="space-y-4 text-sm leading-relaxed text-muted">
+          <p>
+            hi, i&apos;m zach — a software engineer living in Brooklyn, NY,
+            originally from California. i spend my days building streaming SDKs
+            at Peacock and my nights on side projects that usually involve
+            GPUs, LLMs, or both.
+          </p>
+          <p>
+            five years across full-stack web, AI platforms, and most recently
+            streaming SDK development. i like owning things end to end — the
+            architecture, the ergonomics, the docs — and shipping fast with
+            small teams.
+          </p>
+          <p>
+            off the keyboard you&apos;ll find me rock climbing (mostly
+            indoors, occasionally spraining ankles), taking photos, or poking
+            at whatever new tool caught my attention this week.
+          </p>
         </div>
-        <h1 className="text-6xl ml-20">hi I&apos;m Zach 👋</h1>
       </div>
-      <p className="text-2xl pt-20">
-        Thanks for visiting my website! Hopefully Chatty was able to answer some
-        questions you had about me and my experience. if you didn&apos;t get a
-        chance to speak with them, here&apos;s a little bit about me:
-      </p>
-      <ul className="list-disc pt-10 pl-5">
-        <li className="text-2xl ">
-          I&apos;m a software engineer at{" "}
-          <a
-            href="https://www.nbcuniversal.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-steel-600 hover:text-blue-steel-800 transition duration-100"
-          >
-            NBCUniversal 📺
-          </a>
-          , where I work on the Rights and Contracts engineering team.
-        </li>
-        <li className="text-2xl ">
-          I live in Brooklyn, NY 🗽🚖 currently, but I&apos;m originally from
-          the golden state of California 🌞
-        </li>
-        <li className="text-2xl ">
-          I love to rock climb, take photos (check out my{" "}
-          <a
-            href="https://www.instagram.com/zachshotz/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-steel-600 hover:text-blue-steel-800 transition duration-100"
-          >
-            Instagram
-          </a>{" "}
-          ), and work on side projects 📸
-        </li>
-      </ul>
-      <div className="pt-10 text-xl">
-        If you wanna know more about me or you&apos;d like to get in touch, feel
-        free to reach out to me on{" "}
-        <a
-          href="https://www.linkedin.com/in/zzulanas/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-steel-600 hover:text-blue-steel-800 transition duration-100"
-        >
-          LinkedIn
-        </a>{" "}
-        or{" "}
-        <a
-          href="mailto:zzulanas@gmail.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-steel-600 hover:text-blue-steel-800 transition duration-100"
-        >
-          email
-        </a>
-      </div>
-    </div>
+
+      <section className="mt-20">
+        <h2 className="font-mono text-[0.65rem] tracking-[0.4em] text-muted uppercase">
+          experience
+        </h2>
+        <div className="mt-8 flex flex-col gap-10 border-l border-line pl-6 sm:pl-8">
+          {EXPERIENCE.map((e) => (
+            <div key={e.company + e.dates} className="relative">
+              <span className="absolute top-2 -left-[calc(1.5rem+4.5px)] size-2 rounded-full bg-accent sm:-left-[calc(2rem+4.5px)]" />
+              <div className="flex flex-wrap items-baseline justify-between gap-x-4">
+                <h3 className="font-display text-xl font-light tracking-wide">
+                  {e.company}
+                </h3>
+                <span className="font-mono text-xs text-muted">{e.dates}</span>
+              </div>
+              <p className="mt-0.5 font-mono text-xs text-accent/90">{e.role}</p>
+              <p className="mt-3 text-sm leading-relaxed text-muted">
+                {e.summary}
+              </p>
+              {e.highlights.length > 0 && (
+                <ul className="mt-3 space-y-1.5 text-sm text-muted">
+                  {e.highlights.map((h) => (
+                    <li key={h} className="flex gap-2.5">
+                      <span className="mt-[0.55rem] size-1 shrink-0 rounded-full bg-line" />
+                      {h}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ))}
+          <div className="relative">
+            <span className="absolute top-2 -left-[calc(1.5rem+4.5px)] size-2 rounded-full bg-line sm:-left-[calc(2rem+4.5px)]" />
+            <div className="flex flex-wrap items-baseline justify-between gap-x-4">
+              <h3 className="font-display text-xl font-light tracking-wide">
+                UC Santa Cruz
+              </h3>
+              <span className="font-mono text-xs text-muted">2017 — 2021</span>
+            </div>
+            <p className="mt-0.5 font-mono text-xs text-accent/90">
+              B.S. Computer Science
+            </p>
+            <p className="mt-3 text-sm leading-relaxed text-muted">
+              Also: AWS Solutions Architect Associate certified — a story
+              involving a sprained ankle, told in the writing section.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="mt-20">
+        <h2 className="font-mono text-[0.65rem] tracking-[0.4em] text-muted uppercase">
+          elsewhere
+        </h2>
+        <div className="mt-6 flex flex-wrap gap-3">
+          {SOCIAL_LINKS.map((s) => (
+            <a
+              key={s.label}
+              href={s.href}
+              target="_blank"
+              rel="noreferrer"
+              className="group glass inline-flex items-center gap-1.5 rounded-full px-4 py-2 font-mono text-xs text-muted transition-colors hover:text-accent"
+            >
+              {s.label}
+              <ArrowUpRight className="size-3 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </a>
+          ))}
+        </div>
+      </section>
+    </PageShell>
   );
 }

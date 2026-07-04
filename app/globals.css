@@ -1,83 +1,115 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --bg: #f3f7fa;
+  --fg: #0c1622;
+  --muted: #5a6b7c;
+  --line: rgba(12, 22, 34, 0.12);
+  --accent: #0d7d8c;
+  --accent-2: #2563eb;
+  --panel: rgba(255, 255, 255, 0.55);
+  --glow: rgba(148, 210, 255, 0.35);
+}
+
+.dark {
+  --bg: #060a10;
+  --fg: #e7eef5;
+  --muted: #8fa1b3;
+  --line: rgba(231, 238, 245, 0.12);
+  --accent: #4fc8e0;
+  --accent-2: #7db8ff;
+  --panel: rgba(10, 16, 26, 0.5);
+  --glow: rgba(45, 130, 180, 0.25);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-panel: var(--panel);
+  --font-display: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
 
 html {
-  background-color: blue-steel-200;
+  scroll-behavior: smooth;
 }
 
-.link-underline {
-  border-bottom-width: 0;
-  background-image: linear-gradient(transparent, transparent),
-    linear-gradient(#fff, #fff);
-  background-size: 0 3px;
-  background-position: 0 100%;
-  background-repeat: no-repeat;
-  transition: background-size 0.5s ease-in-out;
+/* Major Mono Display for page-title moments — set directly rather than via the
+   @theme-inline font utilities, which bake in the default display face. */
+.font-major {
+  font-family: var(--font-major-mono), ui-sans-serif, system-ui, sans-serif;
 }
 
-.link-underline-black {
-  background-image: linear-gradient(transparent, transparent),
-    linear-gradient(rgb(78, 94, 244), rgb(55, 64, 233));
+body {
+  background-color: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  transition: background-color 300ms ease, color 300ms ease;
 }
 
-.link-underline:hover {
-  background-size: 100% 3px;
-  background-position: 0 100%;
+::selection {
+  background: var(--accent);
+  color: var(--bg);
 }
 
-.selected-tab {
-  background-size: 100% 3px;
-  background-position: 0 100%;
+/* soft ambient glow used on subpages */
+.aero-glow {
+  background:
+    radial-gradient(60rem 40rem at 85% -10%, var(--glow), transparent 60%),
+    radial-gradient(50rem 35rem at -15% 110%, var(--glow), transparent 60%);
 }
 
-#gradient-canvas {
-  width: 100%;
-  height: 100%;
-  --gradient-color-1: #4cd4b0;
-  --gradient-color-2: #fffce6;
-  --gradient-color-3: #f24d16;
-  --gradient-color-4: #edd834;
+/* glass panel */
+.glass {
+  background: var(--panel);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--line);
 }
 
-.background-animate-idle {
-  background-size: 200%;
-
-  -webkit-animation: Idle 3s ease infinite;
-  -moz-animation: Idle 3s ease infinite;
-  animation: Idle 3s ease infinite;
+/* minimal syntax highlighting for rehype-highlight, follows theme */
+.prose pre {
+  background: var(--panel);
+  border: 1px solid var(--line);
 }
-
-@keyframes Idle {
-  0%,
-  100% {
-    background-position: 0% 100%;
-  }
-  50% {
-    background-position: 100% 0%;
-  }
+.hljs-comment,
+.hljs-quote {
+  color: var(--muted);
+  font-style: italic;
 }
-
-.background-animate-thinking {
-  background-size: 400%;
-
-  -webkit-animation: Thinking 2s ease infinite;
-  -moz-animation: Thinking 2s ease infinite;
-  animation: Thinking 2s ease infinite;
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-tag,
+.hljs-name {
+  color: var(--accent-2);
 }
-
-@keyframes Thinking {
-  0%,
-  100% {
-    background-position: 0% 50%;
-  }
-  75% {
-    background-position: 100% 50%;
-  }
-  50% {
-    background-position: 0% 50%;
-  }
-  25% {
-    background-position: 100% 50%;
-  }
+.hljs-string,
+.hljs-attr,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+  color: var(--accent);
+}
+.hljs-title,
+.hljs-function,
+.hljs-section,
+.hljs-built_in {
+  color: var(--fg);
+  font-weight: 500;
+}
+.hljs-number,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+  color: var(--muted);
 }

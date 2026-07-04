@@ -1,100 +1,52 @@
-import { compileMDX } from "next-mdx-remote/rsc";
-import rehypeAutolinkHeadings from "rehype-autolink-headings/lib";
-import rehypeHighlight from "rehype-highlight/lib";
-import rehypeSlug from "rehype-slug";
-import Video from "@/components/post/video";
-import CustomImage from "@/components/post/custom-image";
-import { join } from "path";
 import fs from "fs";
+import path from "path";
+import matter from "gray-matter";
 
-const postsDirectory = join(process.cwd(), "_posts");
+const POSTS_DIR = path.join(process.cwd(), "_posts");
 
-type Filetree = {
-  tree: [
-    {
-      path: string;
-    }
-  ];
-};
+export interface PostMeta {
+  slug: string;
+  title: string;
+  date: string;
+  tags: string[];
+}
 
-export async function getPostByName(
-  fileName: string
-): Promise<BlogPost | undefined> {
-  const realSlug = fileName.replace(/\.mdx$/, "");
-  const fullPath = join(postsDirectory, `${realSlug}.mdx`);
-  const fileContents = fs.readFileSync(fullPath, "utf8");
+export function getAllPosts(): PostMeta[] {
+  return fs
+    .readdirSync(POSTS_DIR)
+    .filter((f) => f.endsWith(".mdx"))
+    .map((file) => {
+      const slug = file.replace(/\.mdx$/, "");
+      const { data } = matter(fs.readFileSync(path.join(POSTS_DIR, file), "utf8"));
+      return {
+        slug,
+        title: data.title as string,
+        date: data.date as string,
+        tags: (data.tags as string[]) ?? [],
+      };
+    })
+    .sort((a, b) => (a.date < b.date ? 1 : -1));
+}
 
-  const rawMDX = fileContents;
-
-  if (rawMDX === "404: Not Found") return undefined;
-
-  const { frontmatter, content } = await compileMDX<{
-    title: string;
-    date: string;
-    tags: string[];
-  }>({
-    source: rawMDX,
-    components: {
-      Video,
-      CustomImage,
-    },
-    options: {
-      parseFrontmatter: true,
-      mdxOptions: {
-        rehypePlugins: [
-          rehypeHighlight,
-          rehypeSlug,
-          [
-            rehypeAutolinkHeadings,
-            {
-              behavior: "wrap",
-            },
-          ],
-        ],
-      },
-    },
-  });
-
-  const id = fileName.replace(/\.mdx$/, "");
-
-  const blogPostObj: BlogPost = {
+export function getPost(slug: string) {
+  const fullPath = path.join(POSTS_DIR, `${slug}.mdx`);
+  if (!fs.existsSync(fullPath)) return null;
+  const { data, content } = matter(fs.readFileSync(fullPath, "utf8"));
+  return {
     meta: {
-      id,
-      title: frontmatter.title,
-      date: frontmatter.date,
-      tags: frontmatter.tags,
+      slug,
+      title: data.title as string,
+      date: data.date as string,
+      tags: (data.tags as string[]) ?? [],
     },
     content,
   };
-
-  return blogPostObj;
 }
 
-export async function getPostsMeta(): Promise<Meta[] | undefined> {
-  let fileArr: string[] = [];
-  fs.readdir(postsDirectory, (err, files) => {
-    if (err) {
-      console.log(err);
-      return;
-    }
-    fileArr = files.filter((file) => file.endsWith(".mdx"));
+export function formatDate(date: string) {
+  return new Date(`${date}T00:00:00`).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   });
-
-  fs.readdirSync(postsDirectory).forEach((file) => {
-    if (file.endsWith(".mdx")) {
-      fileArr.push(file);
-    }
-  });
-
-  const posts: Meta[] = [];
-
-  for (const file of fileArr) {
-    const post = await getPostByName(file);
-    if (post) {
-      const { meta } = post;
-      posts.push(meta);
-    }
-  }
-
-  return posts.sort((a, b) => (a.date < b.date ? 1 : -1));
 }

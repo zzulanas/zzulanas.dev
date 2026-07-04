@@ -1,44 +1,57 @@
-import Nav from "@/components/layout/nav";
+import type { Metadata } from "next";
+import {
+  Outfit,
+  Geist,
+  Geist_Mono,
+  Major_Mono_Display,
+} from "next/font/google";
+import { ThemeProvider } from "next-themes";
 import "./globals.css";
-import { Suspense } from "react";
-import cx from "classnames";
-import { Analytics } from "@vercel/analytics/react";
 
-import { crimsonPro, martelSans, palanquinDark } from "./fonts";
-import Footer from "@/components/layout/footer";
+const outfit = Outfit({
+  subsets: ["latin"],
+  weight: ["100", "200", "300", "400"],
+  variable: "--font-outfit",
+});
 
-export const metadata = {
-  title: "zachary zulanas",
-  description: "software engineer",
+const geist = Geist({
+  subsets: ["latin"],
+  variable: "--font-geist",
+});
+
+const geistMono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-geist-mono",
+});
+
+// hero display face
+const majorMono = Major_Mono_Display({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-major-mono",
+});
+
+export const metadata: Metadata = {
+  metadataBase: new URL("https://zzulanas.dev"),
+  title: {
+    default: "Zachary Zulanas",
+    template: "%s · Zachary Zulanas",
+  },
+  description:
+    "Software engineer in Brooklyn, NY. Streaming SDKs, AI platforms, and 3D things for the web.",
 };
 
 export default function RootLayout({
   children,
-}: {
-  children: React.ReactNode;
-}) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
-      <head>
-        <title>zzulanas.dev</title>
-        <meta property="og:image" content="https://zzulanas.dev/api/og" />
-      </head>
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={cx(
-          crimsonPro.variable,
-          martelSans.className,
-          palanquinDark.className
-        )}
+        className={`${outfit.variable} ${geist.variable} ${geistMono.variable} ${majorMono.variable} min-h-dvh antialiased`}
       >
-        <div></div>
-        <Suspense fallback={"..."}>
-          <Nav />
-        </Suspense>
-        <main className="flex min-h-screen w-full flex-col md:justify-center content-start pt-32 pb-16 max-w-screen-xl mx-auto">
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           {children}
-          <Analytics />
-        </main>
-        <Footer />
+        </ThemeProvider>
       </body>
     </html>
   );
