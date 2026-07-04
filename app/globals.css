@@ -78,7 +78,7 @@ body {
 /* heavier frosted surface for the terminal window — more opaque + stronger
    blur so the scrollback stays readable over the shader */
 .glass-frost {
-  background: color-mix(in srgb, var(--bg) 96%, transparent);
+  background: color-mix(in srgb, var(--bg) 86%, transparent);
   backdrop-filter: blur(24px) saturate(1.1);
   -webkit-backdrop-filter: blur(24px) saturate(1.1);
   border: 1px solid var(--line);
