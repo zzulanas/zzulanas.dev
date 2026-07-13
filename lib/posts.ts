@@ -30,9 +30,9 @@ export function excerptFromContent(content: string, max = 160): string {
 export function getAllPosts(): PostMeta[] {
   return fs
     .readdirSync(POSTS_DIR)
-    .filter((f) => f.endsWith(".mdx"))
+    .filter((f) => f.endsWith(".md"))
     .map((file) => {
-      const slug = file.replace(/\.mdx$/, "");
+      const slug = file.replace(/\.md$/, "");
       const { data, content } = matter(
         fs.readFileSync(path.join(POSTS_DIR, file), "utf8")
       );
@@ -48,7 +48,7 @@ export function getAllPosts(): PostMeta[] {
 }
 
 export function getPost(slug: string) {
-  const fullPath = path.join(POSTS_DIR, `${slug}.mdx`);
+  const fullPath = path.join(POSTS_DIR, `${slug}.md`);
   if (!fs.existsSync(fullPath)) return null;
   const { data, content } = matter(fs.readFileSync(fullPath, "utf8"));
   return {
